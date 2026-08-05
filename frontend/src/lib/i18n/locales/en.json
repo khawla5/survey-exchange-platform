@@ -1,0 +1,105 @@
+{
+  "common": {
+    "appName": "Survey Exchange",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "or": "or",
+    "back": "Back",
+    "points": "points",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "logout": "Log out"
+  },
+  "auth": {
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Join students, researchers and professors exchanging survey responses.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "academicRole": "Academic role",
+      "institutionName": "Institution",
+      "country": "Country",
+      "acceptTerms": "I accept the Terms of Service",
+      "acceptPrivacy": "I accept the Privacy Policy",
+      "submit": "Create account",
+      "googleCta": "Continue with Google",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "success": "Account created. Check your email for a verification code."
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue exchanging survey responses.",
+      "email": "Email address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "googleCta": "Continue with Google",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "subtitle": "Enter the 6-digit code we sent to {{email}}.",
+      "code": "Verification code",
+      "submit": "Verify email",
+      "resend": "Resend code",
+      "resendIn": "Resend in {{seconds}}s",
+      "success": "Email verified successfully. Welcome aboard!"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a reset link.",
+      "email": "Email address",
+      "submit": "Send reset link",
+      "success": "If an account exists for that email, a reset link is on its way.",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set a new password",
+      "subtitle": "Choose a new password for your account.",
+      "password": "New password",
+      "confirmPassword": "Confirm new password",
+      "submit": "Reset password",
+      "success": "Password reset successfully. You can now sign in.",
+      "invalidToken": "This reset link is invalid or has expired."
+    },
+    "validation": {
+      "required": "This field is required",
+      "email": "Enter a valid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordUppercase": "Password must contain an uppercase letter",
+      "passwordLowercase": "Password must contain a lowercase letter",
+      "passwordNumber": "Password must contain a number",
+      "passwordsMatch": "Passwords do not match",
+      "acceptRequired": "You must accept this to continue",
+      "codeLength": "Enter the 6-digit code"
+    }
+  },
+  "dashboard": {
+    "greeting": "Welcome back, {{name}}",
+    "pointsBalance": "Points balance",
+    "reputation": "Reputation",
+    "onboarding": {
+      "title": "You're verified!",
+      "subtitle": "Your account is ready. The full survey exchange experience is coming next."
+    }
+  },
+  "academicRoles": {
+    "UNDERGRADUATE": "Undergraduate",
+    "GRADUATE": "Graduate",
+    "MASTERS": "Master's",
+    "PHD": "PhD",
+    "POSTDOC": "Postdoc",
+    "FACULTY": "Faculty",
+    "OTHER": "Other"
+  }
+}

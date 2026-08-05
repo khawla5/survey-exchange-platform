@@ -1,0 +1,579 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  STUDENT
+  RESEARCHER
+  PROFESSOR
+  INSTITUTION_ADMIN
+  MODERATOR
+  FRAUD_INVESTIGATOR
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DELETED
+}
+
+enum AcademicLevel {
+  UNDERGRADUATE
+  GRADUATE
+  MASTERS
+  PHD
+  POSTDOC
+  FACULTY
+  OTHER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum Language {
+  EN
+  AR
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  PRIVATE
+  INSTITUTION_ONLY
+}
+
+enum SurveyStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  LIVE
+  PAUSED
+  COMPLETED
+  EXPIRED
+  ARCHIVED
+  DELETED
+}
+
+enum SurveyReportReason {
+  SPAM
+  BROKEN_LINK
+  FRAUD
+  OFFENSIVE
+  DUPLICATE
+  HARASSMENT
+  FAKE_RESPONSES
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  DISMISSED
+  WARNED
+  ACTION_TAKEN
+  ESCALATED
+}
+
+enum TransactionType {
+  EARN_COMPLETION
+  EARN_STARTER_BONUS
+  EARN_REFUND
+  EARN_ADMIN_GRANT
+  EARN_INSTITUTION_GRANT
+  SPEND_PUBLISH
+  SPEND_BOOST
+  ADMIN_DEDUCT
+}
+
+enum NotificationType {
+  SURVEY_APPROVED
+  SURVEY_REJECTED
+  SURVEY_PAUSED
+  SURVEY_CLOSED
+  SURVEY_COMPLETED
+  SURVEY_EXPIRED
+  SURVEY_DEADLINE_REMINDER
+  NEW_RECOMMENDED_SURVEY
+  POINTS_EARNED
+  POINTS_SPENT
+  POINTS_REFUNDED
+  ACHIEVEMENT_UNLOCKED
+  LEADERBOARD_RANK_CHANGED
+  INSTITUTION_INVITATION
+  INSTITUTION_ACCEPTED
+  INSTITUTION_REMOVED
+  ADMIN_ANNOUNCEMENT
+  SECURITY_ALERT
+  LOGIN_NEW_DEVICE
+  PASSWORD_CHANGED
+  ACCOUNT_VERIFIED
+  SYSTEM_MAINTENANCE
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+// ============================================================
+// USERS & AUTH
+// ============================================================
+
+model User {
+  id                   String   @id @default(uuid())
+  firstName            String
+  lastName             String
+  email                String   @unique
+  passwordHash         String?
+  googleId             String?  @unique
+  avatar               String?
+  bannerUrl            String?
+  bio                  String?
+  role                 UserRole @default(STUDENT)
+  status               UserStatus @default(PENDING_VERIFICATION)
+  academicLevel        AcademicLevel?
+  institutionId        String?
+  department           String?
+  discipline           String?
+  country              String?
+  language             Language @default(EN)
+  timezone             String?
+  gender               Gender?
+  dateOfBirth          DateTime?
+
+  points               Int      @default(0)
+  reputation           Int      @default(0)
+
+  emailVerified        Boolean  @default(false)
+  onboardingCompleted  Boolean  @default(false)
+
+  profileVisibility    ProfileVisibility @default(PUBLIC)
+  hideLeaderboard      Boolean  @default(false)
+  hideStatistics       Boolean  @default(false)
+  hideActivity         Boolean  @default(false)
+
+  notifyEmail          Boolean  @default(true)
+  notifyPush           Boolean  @default(true)
+  notifyInApp          Boolean  @default(true)
+  notifyWeeklySummary  Boolean  @default(true)
+  notifyMarketing      Boolean  @default(false)
+
+  failedLoginAttempts  Int      @default(0)
+  lockedUntil          DateTime?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  deletedAt            DateTime?
+  createdBy            String?
+  updatedBy            String?
+
+  institution           Institution? @relation(fields: [institutionId], references: [id])
+  sessions               Session[]
+  refreshTokens          RefreshToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  createdSurveys          Survey[]            @relation("SurveyCreator")
+  surveyResponses         SurveyResponse[]
+  bookmarks               SurveyBookmark[]
+  surveyReports           SurveyReport[]      @relation("ReportedBy")
+  transactions            Transaction[]
+  notifications           Notification[]
+  userAchievements        UserAchievement[]
+  auditLogsAsActor        AuditLog[]          @relation("AuditActor")
+  files                   File[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  userAgent    String?
+  ip           String?
+  device       String?
+  browser      String?
+  os           String?
+  country      String?
+  isCurrent    Boolean  @default(false)
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+  revokedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id              String   @id @default(uuid())
+  userId          String
+  tokenHash       String   @unique
+  userAgent       String?
+  ip              String?
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  replacedByToken String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model EmailVerificationToken {
+  id         String   @id @default(uuid())
+  userId     String
+  codeHash   String
+  attempts   Int      @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id         String   @id @default(uuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+// ============================================================
+// INSTITUTIONS
+// ============================================================
+
+model Institution {
+  id          String   @id @default(uuid())
+  name        String
+  logo        String?
+  website     String?
+  description String?
+  country     String?
+  city        String?
+  domain      String?  @unique
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  members User[]
+  surveys Survey[]
+
+  @@map("institutions")
+}
+
+// ============================================================
+// CATEGORIES & TAGS
+// ============================================================
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  icon      String?
+  color     String?
+  order     Int      @default(0)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  surveys Survey[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id   String @id @default(uuid())
+  name String @unique
+  slug String @unique
+
+  surveys SurveyTag[]
+
+  @@map("tags")
+}
+
+// ============================================================
+// SURVEYS
+// ============================================================
+
+model Survey {
+  id                   String       @id @default(uuid())
+  title                String
+  description          String
+  categoryId           String
+  thumbnail            String?
+  surveyUrl            String
+  completionCode       String?
+  estimatedTimeMinutes Int
+  targetResponses      Int
+  currentResponses     Int          @default(0)
+  reward               Int
+  publishingCost       Int
+  boostCost            Int?
+  priorityLevel        Int          @default(0)
+  boostExpiresAt       DateTime?
+  deadline             DateTime
+  status               SurveyStatus @default(DRAFT)
+
+  targetAcademicLevel AcademicLevel?
+  targetCountry       String?
+  targetLanguage      Language?
+  targetGender        Gender?
+  targetAgeMin        Int?
+  targetAgeMax        Int?
+
+  views     Int @default(0)
+  clicks    Int @default(0)
+
+  rejectionReason String?
+
+  creatorId     String
+  institutionId String?
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  publishedAt  DateTime?
+  archivedAt   DateTime?
+  deletedAt    DateTime?
+
+  creator     User         @relation("SurveyCreator", fields: [creatorId], references: [id])
+  institution Institution? @relation(fields: [institutionId], references: [id])
+  category    Category     @relation(fields: [categoryId], references: [id])
+  responses   SurveyResponse[]
+  bookmarks   SurveyBookmark[]
+  reports     SurveyReport[]
+  tags        SurveyTag[]
+
+  @@index([status])
+  @@index([creatorId])
+  @@index([categoryId])
+  @@map("surveys")
+}
+
+model SurveyTag {
+  surveyId String
+  tagId    String
+
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([surveyId, tagId])
+  @@map("survey_tags")
+}
+
+model SurveyResponse {
+  id             String    @id @default(uuid())
+  surveyId       String
+  userId         String
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  completionCode String?
+  pointsAwarded  Int       @default(0)
+  fraudScore     Int       @default(0)
+  ip             String?
+  device         String?
+  createdAt      DateTime  @default(now())
+
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([surveyId, userId])
+  @@map("survey_responses")
+}
+
+model SurveyBookmark {
+  id        String   @id @default(uuid())
+  surveyId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([surveyId, userId])
+  @@map("survey_bookmarks")
+}
+
+model SurveyReport {
+  id          String              @id @default(uuid())
+  surveyId    String
+  reporterId  String
+  reason      SurveyReportReason
+  description String?
+  status      ReportStatus        @default(OPEN)
+  createdAt   DateTime            @default(now())
+  resolvedAt  DateTime?
+
+  survey   Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  reporter User   @relation("ReportedBy", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@map("survey_reports")
+}
+
+// ============================================================
+// GAMIFICATION
+// ============================================================
+
+model Achievement {
+  id            String   @id @default(uuid())
+  key           String   @unique
+  name          String
+  description   String
+  category      String
+  icon          String
+  color         String
+  pointsReward  Int      @default(0)
+  criteria      Json
+  visible       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+// ============================================================
+// POINTS ECONOMY
+// ============================================================
+
+model Transaction {
+  id             String          @id @default(uuid())
+  userId         String
+  type           TransactionType
+  amount         Int
+  balanceBefore  Int
+  balanceAfter   Int
+  description    String
+  referenceType  String?
+  referenceId    String?
+  createdAt      DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("transactions")
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+model Notification {
+  id        String               @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  priority  NotificationPriority @default(NORMAL)
+  actionUrl String?
+  metadata  Json?
+  readAt    DateTime?
+  createdAt DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+// ============================================================
+// AUDIT & SYSTEM
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  action     String
+  targetType String
+  targetId   String
+  reason     String?
+  oldValue   Json?
+  newValue   Json?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([targetType, targetId])
+  @@map("audit_logs")
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  level     String
+  category  String
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@map("system_logs")
+}
+
+model File {
+  id        String   @id @default(uuid())
+  userId    String?
+  url       String
+  key       String
+  mimeType  String
+  size      Int
+  purpose   String
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("files")
+}
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
