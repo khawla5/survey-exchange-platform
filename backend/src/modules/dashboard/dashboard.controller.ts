@@ -19,9 +19,9 @@ export const dashboardController = {
           where: { id: userId },
           select: { points: true, reputation: true },
         }),
-        prisma.surveyResponse.count({ where: { userId } }),
-        prisma.survey.count({ where: { creatorId: userId, deletedAt: null } }),
-        prisma.surveyBookmark.count({ where: { userId } }),
+        prisma.pollResponse.count({ where: { userId } }),
+        prisma.poll.count({ where: { creatorId: userId, deletedAt: null } }),
+        prisma.pollBookmark.count({ where: { userId } }),
         prisma.userAchievement.count({ where: { userId } }),
       ]);
 
@@ -29,8 +29,8 @@ export const dashboardController = {
       data: {
         points: user.points,
         reputation: user.reputation,
-        completedSurveys: completedCount,
-        publishedSurveys: publishedCount,
+        completedPolls: completedCount,
+        publishedPolls: publishedCount,
         bookmarks: bookmarksCount,
         achievements: achievementsCount,
       },
@@ -41,17 +41,17 @@ export const dashboardController = {
     const userId = requireUserId(req);
     const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
-    const completedSurveyIds = (
-      await prisma.surveyResponse.findMany({ where: { userId }, select: { surveyId: true } })
-    ).map((r) => r.surveyId);
+    const completedPollIds = (
+      await prisma.pollResponse.findMany({ where: { userId }, select: { pollId: true } })
+    ).map((r) => r.pollId);
 
-    const matched = await prisma.survey.findMany({
+    const matched = await prisma.poll.findMany({
       where: {
         deletedAt: null,
         status: "LIVE",
         deadline: { gt: new Date() },
         creatorId: { not: userId },
-        id: { notIn: completedSurveyIds },
+        id: { notIn: completedPollIds },
         OR: [
           user.academicLevel ? { targetAcademicLevel: user.academicLevel } : {},
           user.country ? { targetCountry: user.country } : {},

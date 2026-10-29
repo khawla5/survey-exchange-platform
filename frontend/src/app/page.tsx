@@ -9,27 +9,27 @@ import { LanguageToggle } from "@/components/layout/language-toggle";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useMe } from "@/lib/auth/use-auth";
 
-const features = [
-  {
-    icon: Repeat,
-    title: "Exchange, don't beg",
-    description: "Answer surveys to earn points, then spend them to get real responses to your own.",
-  },
-  {
-    icon: Users,
-    title: "Built for academia",
-    description: "Students, researchers, professors and universities — matched by discipline and role.",
-  },
-  {
-    icon: Sparkles,
-    title: "Gamified contribution",
-    description: "Leaderboards, achievements and reputation reward consistent, quality participation.",
-  },
-];
-
 export default function Home() {
   const { t } = useTranslation();
   const { data: user } = useMe();
+
+  const features = [
+    {
+      icon: Repeat,
+      title: t("home.features.exchangeTitle"),
+      description: t("home.features.exchangeBody"),
+    },
+    {
+      icon: Users,
+      title: t("home.features.academiaTitle"),
+      description: t("home.features.academiaBody"),
+    },
+    {
+      icon: Sparkles,
+      title: t("home.features.gamifiedTitle"),
+      description: t("home.features.gamifiedBody"),
+    },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -43,15 +43,15 @@ export default function Home() {
           <ThemeToggle />
           {user ? (
             <Button asChild size="sm">
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/dashboard">{t("home.dashboard")}</Link>
             </Button>
           ) : (
             <>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/login">{t("auth.login.submit")}</Link>
+                <Link href="/login">{t("home.signIn")}</Link>
               </Button>
               <Button asChild size="sm">
-                <Link href="/register">{t("auth.register.submit")}</Link>
+                <Link href="/register">{t("home.createAccount")}</Link>
               </Button>
             </>
           )}
@@ -66,14 +66,12 @@ export default function Home() {
           className="max-w-2xl space-y-6"
         >
           <h1 className="font-hero text-4xl leading-tight font-bold text-balance sm:text-5xl">
-            Answer surveys. Earn points. Publish your own.
+            {t("home.heroTitle")}
           </h1>
-          <p className="text-lg text-muted-foreground">
-            The survey exchange platform for students, researchers, professors and universities.
-          </p>
+          <p className="text-lg text-muted-foreground">{t("home.heroSubtitle")}</p>
           <Button asChild size="lg" className="gap-2">
             <Link href={user ? "/dashboard" : "/register"}>
-              Get started <ArrowRight className="size-4" />
+              {t("home.getStarted")} <ArrowRight className="icon-flip size-4" />
             </Link>
           </Button>
         </motion.div>

@@ -1,9 +1,10 @@
 {
   "common": {
-    "appName": "تبادل الاستبيانات",
+    "appName": "PollXchange",
     "loading": "جارِ التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
+    "close": "إغلاق",
     "or": "أو",
     "back": "رجوع",
     "points": "نقطة",
@@ -12,12 +13,35 @@
     "light": "فاتح",
     "dark": "داكن",
     "system": "تلقائي",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "next": "التالي",
+    "browseAll": "تصفح الكل",
+    "previous": "السابق",
+    "pageOf": "صفحة {{page}} من {{total}}",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
+    "toggleLanguage": "تبديل اللغة",
+    "toggleTheme": "تبديل المظهر",
+    "passwordStrength": {
+      "weak": "ضعيفة",
+      "fair": "متوسطة",
+      "good": "جيدة",
+      "strong": "قوية"
+    }
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "browse": "تصفح",
+    "myPolls": "استطلاعاتي",
+    "points": "النقاط",
+    "leaderboard": "المتصدرون",
+    "achievements": "الإنجازات",
+    "create": "إنشاء"
   },
   "auth": {
     "register": {
       "title": "إنشاء حسابك",
-      "subtitle": "انضم إلى الطلاب والباحثين وأعضاء هيئة التدريس لتبادل إجابات الاستبيانات.",
+      "subtitle": "انضم إلى الطلاب والباحثين وأعضاء هيئة التدريس لتبادل إجابات الاستطلاعات.",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
       "email": "البريد الإلكتروني",
@@ -36,7 +60,7 @@
     },
     "login": {
       "title": "مرحبًا بعودتك",
-      "subtitle": "سجّل الدخول لمتابعة تبادل إجابات الاستبيانات.",
+      "subtitle": "سجّل الدخول لمتابعة تبادل إجابات الاستطلاعات.",
       "email": "البريد الإلكتروني",
       "password": "كلمة المرور",
       "rememberMe": "تذكرني",
@@ -72,6 +96,8 @@
       "success": "تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.",
       "invalidToken": "رابط إعادة التعيين غير صالح أو منتهي الصلاحية."
     },
+    "heroTitle": "أجب على الاستطلاعات. اكسب نقاطًا. انشر استطلاعك الخاص.",
+    "heroSubtitle": "منصة تبادل قائمة على النقاط للطلاب والباحثين وأعضاء هيئة التدريس والجامعات لتبادل إجابات استطلاعات حقيقية — بدون مقابل مادي وبدون تواصل بارد.",
     "validation": {
       "required": "هذا الحقل مطلوب",
       "email": "أدخل بريدًا إلكترونيًا صحيحًا",
@@ -84,14 +110,182 @@
       "codeLength": "أدخل الرمز المكون من 6 أرقام"
     }
   },
+  "home": {
+    "signIn": "تسجيل الدخول",
+    "createAccount": "إنشاء حساب",
+    "dashboard": "لوحة التحكم",
+    "getStarted": "ابدأ الآن",
+    "heroTitle": "أجب على الاستطلاعات. اكسب نقاطًا. انشر استطلاعك الخاص.",
+    "heroSubtitle": "منصة تبادل الاستطلاعات للطلاب والباحثين وأعضاء هيئة التدريس والجامعات.",
+    "features": {
+      "exchangeTitle": "بادل، لا تستجدِ",
+      "exchangeBody": "أجب على الاستطلاعات لتكسب نقاطًا، ثم استبدلها للحصول على إجابات حقيقية لاستطلاعك.",
+      "academiaTitle": "مصمم للأوساط الأكاديمية",
+      "academiaBody": "طلاب وباحثون وأعضاء هيئة تدريس وجامعات — تتم مطابقتهم حسب التخصص والدور الأكاديمي.",
+      "gamifiedTitle": "مساهمة تفاعلية ومحفّزة",
+      "gamifiedBody": "لوحة المتصدرين والإنجازات والسمعة تكافئ المشاركة المستمرة وعالية الجودة."
+    }
+  },
   "dashboard": {
     "greeting": "مرحبًا بعودتك، {{name}}",
     "pointsBalance": "رصيد النقاط",
     "reputation": "السمعة",
+    "completedPolls": "الاستطلاعات المكتملة",
+    "bookmarks": "المحفوظات",
+    "recommended": "موصى به لك",
+    "noRecommendations": "لا توجد توصيات بعد — كن أول من ينشر استطلاعًا!",
+    "createPollCta": "أنشئ استطلاعًا",
     "onboarding": {
       "title": "تم التحقق من حسابك!",
-      "subtitle": "حسابك جاهز. تجربة تبادل الاستبيانات الكاملة قادمة قريبًا."
+      "subtitle": "حسابك جاهز. تجربة تبادل الاستطلاعات الكاملة قادمة قريبًا."
     }
+  },
+  "polls": {
+    "browse": {
+      "title": "تصفح الاستطلاعات",
+      "searchPlaceholder": "ابحث عن استطلاعات...",
+      "allCategories": "كل الفئات",
+      "sortNewest": "الأحدث",
+      "sortReward": "أعلى مكافأة",
+      "sortDeadline": "الموعد النهائي الأقرب",
+      "sortTime": "أقل وقت",
+      "sortPopular": "الأكثر رواجًا",
+      "noResultsTitle": "لا توجد استطلاعات",
+      "noResultsBody": "جرّب تعديل البحث أو الفلاتر."
+    },
+    "card": {
+      "participate": "شارك",
+      "completed": "مكتمل",
+      "minutes": "د",
+      "pts": "نقطة",
+      "daysLeft": "باقي {{count}} يوم",
+      "bookmark": "حفظ"
+    },
+    "details": {
+      "openPoll": "افتح الاستطلاع",
+      "alreadyCompleted": "تم الإكمال مسبقًا",
+      "iCompletedIt": "أكملت الاستطلاع",
+      "confirmCompletion": "تأكيد الإكمال",
+      "confirmCompletionBody": "أكّد أنك أكملت هذا الاستطلاع لتكسب {{points}} نقطة.",
+      "completionCode": "كود الإكمال",
+      "completionCodePlaceholder": "يظهر في نهاية الاستطلاع",
+      "confirmEarnPoints": "تأكيد واكسب النقاط",
+      "reportPoll": "الإبلاغ عن الاستطلاع",
+      "reportThisPoll": "الإبلاغ عن هذا الاستطلاع",
+      "additionalDetails": "تفاصيل إضافية (اختياري)",
+      "submitReport": "إرسال البلاغ",
+      "managePoll": "إدارة هذا الاستطلاع",
+      "back": "رجوع",
+      "completedToast": "أحسنت! ربحت {{points}} نقطة 🎉",
+      "reportSubmittedToast": "تم إرسال البلاغ. شكرًا لمساعدتك بالحفاظ على موثوقية المنصة.",
+      "time": "الوقت",
+      "reward": "المكافأة",
+      "deadline": "الموعد النهائي",
+      "views": "المشاهدات",
+      "responsesCount": "{{current}} / {{target}} إجابة",
+      "reportReasons": {
+        "SPAM": "رسائل مزعجة",
+        "BROKEN_LINK": "رابط معطّل",
+        "FRAUD": "احتيال",
+        "OFFENSIVE": "محتوى مسيء",
+        "DUPLICATE": "مكرر",
+        "OTHER": "أخرى"
+      }
+    },
+    "create": {
+      "title": "إنشاء استطلاع",
+      "steps": {
+        "details": "التفاصيل",
+        "targeting": "الاستهداف",
+        "budget": "الميزانية",
+        "review": "المراجعة"
+      },
+      "fields": {
+        "title": "عنوان الاستطلاع",
+        "description": "الوصف",
+        "category": "الفئة",
+        "categoryPlaceholder": "اختر",
+        "estimatedTime": "الوقت المتوقع (دقيقة)",
+        "pollUrl": "رابط الاستطلاع (نموذج خارجي)",
+        "completionCode": "كود الإكمال (اختياري)",
+        "tags": "الوسوم (افصل بينها بفاصلة)",
+        "tagsPlaceholder": "تجربة المستخدم، بحث",
+        "targetingHint": "حدّد اختياريًا الفئة المستهدفة لعرض هذا الاستطلاع لها. اتركه فارغًا للوصول للجميع.",
+        "targetCountry": "الدولة المستهدفة",
+        "targetResponses": "عدد الإجابات المستهدف",
+        "reward": "المكافأة لكل إجابة (نقطة)",
+        "deadline": "الموعد النهائي"
+      },
+      "publishingCost": "تكلفة النشر",
+      "yourBalance": "رصيدك",
+      "insufficientFunds": "لا تملك نقاطًا كافية لنشر هذا الاستطلاع بعد — أجب على استطلاعات أخرى لتكسب نقاطًا.",
+      "review": {
+        "title": "العنوان",
+        "responsesReward": "الإجابات × المكافأة",
+        "deadline": "الموعد النهائي",
+        "totalCost": "التكلفة الإجمالية"
+      },
+      "saveDraft": "حفظ كمسودة",
+      "publishNow": "انشر الآن",
+      "draftSaved": "تم حفظ المسودة",
+      "published": "تم نشر الاستطلاع!",
+      "errors": {
+        "titleMin": "يجب أن يتكون العنوان من 3 أحرف على الأقل",
+        "descriptionMin": "يجب أن يتكون الوصف من 10 أحرف على الأقل",
+        "categoryRequired": "اختر فئة",
+        "urlInvalid": "أدخل رابط استطلاع صحيح",
+        "deadlineRequired": "اختر موعدًا نهائيًا"
+      }
+    },
+    "mine": {
+      "title": "استطلاعاتي",
+      "createPoll": "إنشاء استطلاع",
+      "tabs": {
+        "all": "الكل",
+        "draft": "مسودة",
+        "live": "مباشر",
+        "completed": "مكتمل",
+        "archived": "مؤرشف"
+      },
+      "emptyTitle": "لا توجد استطلاعات بعد",
+      "emptyBody": "انشر أول استطلاع لك لتبدأ بجمع الإجابات."
+    }
+  },
+  "points": {
+    "title": "سجل النقاط",
+    "balance": "{{points}} نقطة",
+    "empty": "لا توجد معاملات بعد.",
+    "balanceLabel": "الرصيد: {{amount}}"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تعليم الكل كمقروء",
+    "empty": "لا توجد إشعارات بعد",
+    "justNow": "الآن",
+    "minutesAgo": "قبل {{count}} د",
+    "hoursAgo": "قبل {{count}} س",
+    "daysAgo": "قبل {{count}} يوم"
+  },
+  "achievements": {
+    "title": "الإنجازات",
+    "unlockedCount": "{{unlocked}} / {{total}} مُنجز"
+  },
+  "leaderboard": {
+    "title": "لوحة المتصدرين",
+    "weekly": "أسبوعي",
+    "monthly": "شهري",
+    "allTime": "كل الأوقات",
+    "you": "(أنت)",
+    "emptyTitle": "لا يوجد نشاط في هذه الفترة بعد"
+  },
+  "institutions": {
+    "verified": "موثّقة",
+    "members": "الأعضاء",
+    "livePolls": "الاستطلاعات المباشرة",
+    "completedPolls": "الاستطلاعات المكتملة",
+    "totalPoints": "إجمالي النقاط",
+    "topContributors": "أبرز المساهمين",
+    "allMembers": "كل الأعضاء ({{count}})"
   },
   "academicRoles": {
     "UNDERGRADUATE": "بكالوريوس",

@@ -13,8 +13,8 @@ export interface Institution {
 export interface InstitutionDetail extends Institution {
   stats: {
     memberCount: number;
-    liveSurveyCount: number;
-    completedSurveyCount: number;
+    livePollCount: number;
+    completedPollCount: number;
     totalPoints: number;
   };
   topContributors: {

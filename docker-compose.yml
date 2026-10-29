@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: sep_dev_password
       POSTGRES_DB: survey_exchange
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - sep_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +22,7 @@ services:
     container_name: sep-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - sep_redis_data:/data
     healthcheck:

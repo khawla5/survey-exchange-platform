@@ -1,7 +1,7 @@
 import { apiClient, ApiEnvelope } from "@/lib/api/client";
-import { CreateSurveyPayload, Survey } from "@/types/survey";
+import { CreatePollPayload, Poll } from "@/types/poll";
 
-export interface SurveyListParams {
+export interface PollListParams {
   page?: number;
   limit?: number;
   search?: string;
@@ -12,46 +12,46 @@ export interface SurveyListParams {
   bookmarked?: boolean;
 }
 
-export async function fetchSurveys(params: SurveyListParams) {
-  const { data } = await apiClient.get<ApiEnvelope<Survey[]>>("/surveys", { params });
+export async function fetchPolls(params: PollListParams) {
+  const { data } = await apiClient.get<ApiEnvelope<Poll[]>>("/polls", { params });
   return data;
 }
 
-export async function fetchSurvey(id: string) {
-  const { data } = await apiClient.get<ApiEnvelope<Survey>>(`/surveys/${id}`);
+export async function fetchPoll(id: string) {
+  const { data } = await apiClient.get<ApiEnvelope<Poll>>(`/polls/${id}`);
   return data.data;
 }
 
-export async function createSurvey(payload: CreateSurveyPayload) {
-  const { data } = await apiClient.post<ApiEnvelope<Survey>>("/surveys", payload);
+export async function createPoll(payload: CreatePollPayload) {
+  const { data } = await apiClient.post<ApiEnvelope<Poll>>("/polls", payload);
   return data.data;
 }
 
 export async function toggleBookmark(id: string) {
   const { data } = await apiClient.post<ApiEnvelope<{ bookmarked: boolean }>>(
-    `/surveys/${id}/bookmark`
+    `/polls/${id}/bookmark`
   );
   return data.data;
 }
 
-export async function completeSurvey(id: string, completionCode?: string) {
+export async function completePoll(id: string, completionCode?: string) {
   const { data } = await apiClient.post<ApiEnvelope<{ pointsAwarded: number }>>(
-    `/surveys/${id}/complete`,
+    `/polls/${id}/complete`,
     { completionCode }
   );
   return data.data;
 }
 
-export async function deleteSurvey(id: string) {
+export async function deletePoll(id: string) {
   const { data } = await apiClient.delete<ApiEnvelope<{ deleted: boolean; refundAmount: number }>>(
-    `/surveys/${id}`
+    `/polls/${id}`
   );
   return data.data;
 }
 
-export async function reportSurvey(id: string, reason: string, description?: string) {
+export async function reportPoll(id: string, reason: string, description?: string) {
   const { data } = await apiClient.post<ApiEnvelope<{ reported: boolean }>>(
-    `/surveys/${id}/report`,
+    `/polls/${id}/report`,
     { reason, description }
   );
   return data.data;

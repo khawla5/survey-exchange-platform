@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Building2, Crown, Medal, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,18 +16,19 @@ import { AuthUser } from "@/types/auth";
 const rankColors = ["text-[#F59E0B]", "text-[#9CA3AF]", "text-[#B45309]"];
 
 function LeaderboardContent({ user }: { user: AuthUser }) {
+  const { t } = useTranslation();
   const [period, setPeriod] = React.useState<"weekly" | "monthly" | "alltime">("alltime");
   const { data, isLoading } = useLeaderboard(period);
 
   return (
     <>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold">Leaderboard</h1>
+        <h1 className="text-2xl font-semibold">{t("leaderboard.title")}</h1>
         <Tabs value={period} onValueChange={(v) => setPeriod(v as typeof period)}>
           <TabsList>
-            <TabsTrigger value="weekly">Weekly</TabsTrigger>
-            <TabsTrigger value="monthly">Monthly</TabsTrigger>
-            <TabsTrigger value="alltime">All Time</TabsTrigger>
+            <TabsTrigger value="weekly">{t("leaderboard.weekly")}</TabsTrigger>
+            <TabsTrigger value="monthly">{t("leaderboard.monthly")}</TabsTrigger>
+            <TabsTrigger value="alltime">{t("leaderboard.allTime")}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -66,7 +68,7 @@ function LeaderboardContent({ user }: { user: AuthUser }) {
                   <div className="flex-1">
                     <p className="flex items-center gap-1.5 text-sm font-medium">
                       {entry.firstName} {entry.lastName}
-                      {isMe && <span className="text-xs text-primary">(you)</span>}
+                      {isMe && <span className="text-xs text-primary">{t("leaderboard.you")}</span>}
                       {entry.institution?.verified && <Building2 className="size-3.5 text-info" />}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -84,7 +86,7 @@ function LeaderboardContent({ user }: { user: AuthUser }) {
       ) : (
         <div className="rounded-2xl border border-dashed border-border p-12 text-center">
           <Crown className="mx-auto mb-2 size-8 text-muted-foreground" />
-          <p className="font-medium">No activity in this period yet</p>
+          <p className="font-medium">{t("leaderboard.emptyTitle")}</p>
         </div>
       )}
     </>

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import * as Icons from "lucide-react";
 import { Lock, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
@@ -21,6 +22,7 @@ function AchievementIcon({ icon }: { icon: string }) {
 }
 
 function AchievementCard({ achievement, index }: { achievement: Achievement; index: number }) {
+  const { t } = useTranslation();
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -43,7 +45,7 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
             <p className="text-xs text-muted-foreground">{achievement.description}</p>
           </div>
           <div className="flex items-center gap-1 text-xs font-medium text-primary">
-            <Sparkles className="size-3.5" /> +{achievement.pointsReward} pts
+            <Sparkles className="size-3.5" /> +{achievement.pointsReward} {t("polls.card.pts")}
           </div>
         </CardContent>
       </Card>
@@ -52,6 +54,7 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
 }
 
 export default function AchievementsPage() {
+  const { t } = useTranslation();
   const { data: achievements, isLoading } = useAchievements();
   const unlockedCount = achievements?.filter((a) => a.unlocked).length ?? 0;
 
@@ -60,10 +63,13 @@ export default function AchievementsPage() {
       {() => (
         <>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Achievements</h1>
+            <h1 className="text-2xl font-semibold">{t("achievements.title")}</h1>
             {achievements && (
               <p className="text-sm text-muted-foreground">
-                {unlockedCount} / {achievements.length} unlocked
+                {t("achievements.unlockedCount", {
+                  unlocked: unlockedCount,
+                  total: achievements.length,
+                })}
               </p>
             )}
           </div>

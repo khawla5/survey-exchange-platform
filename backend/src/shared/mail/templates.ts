@@ -20,14 +20,14 @@ const codeStyle = `
 
 function wrap(content: string): string {
   return `<html><body style="${baseStyle}"><div style="${cardStyle}">${content}
-    <p style="color:#6B7280;font-size:12px;margin-top:32px;">Survey Exchange Platform</p>
+    <p style="color:#6B7280;font-size:12px;margin-top:32px;">PollXchange</p>
   </div></body></html>`;
 }
 
 export function verificationEmailTemplate(firstName: string, code: string): string {
   return wrap(`
     <h2 style="color:#111827;">Verify your email, ${firstName}</h2>
-    <p style="color:#6B7280;">Use the code below to verify your Survey Exchange account. It expires in 15 minutes.</p>
+    <p style="color:#6B7280;">Use the code below to verify your PollXchange account. It expires in 15 minutes.</p>
     <div style="${codeStyle}">${code}</div>
     <p style="color:#6B7280;font-size:14px;">If you didn't request this, you can safely ignore this email.</p>
   `);
@@ -44,14 +44,14 @@ export function passwordResetEmailTemplate(firstName: string, resetUrl: string):
 
 export function welcomeEmailTemplate(firstName: string): string {
   return wrap(`
-    <h2 style="color:#111827;">Welcome to Survey Exchange, ${firstName} 🎉</h2>
-    <p style="color:#6B7280;">Your account is verified. Answer surveys to earn points, then spend them to get responses to your own research.</p>
+    <h2 style="color:#111827;">Welcome to PollXchange, ${firstName} 🎉</h2>
+    <p style="color:#6B7280;">Your account is verified. Answer polls to earn points, then spend them to get responses to your own research.</p>
   `);
 }
 
 export function passwordChangedEmailTemplate(firstName: string): string {
   return wrap(`
     <h2 style="color:#111827;">Your password was changed</h2>
-    <p style="color:#6B7280;">Hi ${firstName}, this confirms your Survey Exchange password was just changed. If this wasn't you, contact support immediately.</p>
+    <p style="color:#6B7280;">Hi ${firstName}, this confirms your PollXchange password was just changed. If this wasn't you, contact support immediately.</p>
   `);
 }

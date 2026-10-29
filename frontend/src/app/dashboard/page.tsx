@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
-import { SurveyCard } from "@/components/surveys/survey-card";
+import { PollCard } from "@/components/polls/poll-card";
 import { useDashboardStatistics, useRecommendations } from "@/lib/dashboard/use-dashboard";
 
 function StatCard({
@@ -62,8 +62,12 @@ export default function DashboardPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <StatCard icon={Sparkles} label={t("dashboard.pointsBalance")} value={stats.points} />
               <StatCard icon={TrendingUp} label={t("dashboard.reputation")} value={stats.reputation} />
-              <StatCard icon={FileCheck2} label="Completed surveys" value={stats.completedSurveys} />
-              <StatCard icon={BookMarked} label="Bookmarks" value={stats.bookmarks} />
+              <StatCard
+                icon={FileCheck2}
+                label={t("dashboard.completedPolls")}
+                value={stats.completedPolls}
+              />
+              <StatCard icon={BookMarked} label={t("dashboard.bookmarks")} value={stats.bookmarks} />
             </div>
           )}
 
@@ -72,10 +76,10 @@ export default function DashboardPage() {
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <Award className="size-5 text-primary" />
-                  Recommended for you
+                  {t("dashboard.recommended")}
                 </span>
                 <Button asChild variant="ghost" size="sm">
-                  <Link href="/surveys">Browse all</Link>
+                  <Link href="/polls">{t("common.browseAll")}</Link>
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -88,16 +92,16 @@ export default function DashboardPage() {
                 </div>
               ) : recommendations && recommendations.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {recommendations.map((survey) => (
-                    <SurveyCard key={survey.id} survey={survey} />
+                  {recommendations.map((poll) => (
+                    <PollCard key={poll.id} poll={poll} />
                   ))}
                 </div>
               ) : (
                 <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-                  No recommendations yet — be the first to publish a survey!
+                  {t("dashboard.noRecommendations")}
                   <div className="mt-3">
                     <Button asChild size="sm">
-                      <Link href="/surveys/create">Create a survey</Link>
+                      <Link href="/polls/create">{t("dashboard.createPollCta")}</Link>
                     </Button>
                   </div>
                 </div>

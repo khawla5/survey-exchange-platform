@@ -57,7 +57,7 @@ enum ProfileVisibility {
   INSTITUTION_ONLY
 }
 
-enum SurveyStatus {
+enum PollStatus {
   DRAFT
   PENDING_REVIEW
   APPROVED
@@ -70,7 +70,7 @@ enum SurveyStatus {
   DELETED
 }
 
-enum SurveyReportReason {
+enum PollReportReason {
   SPAM
   BROKEN_LINK
   FRAUD
@@ -101,14 +101,14 @@ enum TransactionType {
 }
 
 enum NotificationType {
-  SURVEY_APPROVED
-  SURVEY_REJECTED
-  SURVEY_PAUSED
-  SURVEY_CLOSED
-  SURVEY_COMPLETED
-  SURVEY_EXPIRED
-  SURVEY_DEADLINE_REMINDER
-  NEW_RECOMMENDED_SURVEY
+  POLL_APPROVED
+  POLL_REJECTED
+  POLL_PAUSED
+  POLL_CLOSED
+  POLL_COMPLETED
+  POLL_EXPIRED
+  POLL_DEADLINE_REMINDER
+  NEW_RECOMMENDED_POLL
   POINTS_EARNED
   POINTS_SPENT
   POINTS_REFUNDED
@@ -189,10 +189,10 @@ model User {
   refreshTokens          RefreshToken[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
-  createdSurveys          Survey[]            @relation("SurveyCreator")
-  surveyResponses         SurveyResponse[]
-  bookmarks               SurveyBookmark[]
-  surveyReports           SurveyReport[]      @relation("ReportedBy")
+  createdPolls            Poll[]              @relation("PollCreator")
+  pollResponses           PollResponse[]
+  bookmarks               PollBookmark[]
+  pollReports             PollReport[]        @relation("ReportedBy")
   transactions            Transaction[]
   notifications           Notification[]
   userAchievements        UserAchievement[]
@@ -288,7 +288,7 @@ model Institution {
   deletedAt   DateTime?
 
   members User[]
-  surveys Survey[]
+  polls   Poll[]
 
   @@map("institutions")
 }
@@ -300,6 +300,7 @@ model Institution {
 model Category {
   id        String   @id @default(uuid())
   name      String
+  nameAr    String?
   slug      String   @unique
   icon      String?
   color     String?
@@ -307,7 +308,7 @@ model Category {
   archived  Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  surveys Survey[]
+  polls Poll[]
 
   @@map("categories")
 }
@@ -317,33 +318,33 @@ model Tag {
   name String @unique
   slug String @unique
 
-  surveys SurveyTag[]
+  polls PollTag[]
 
   @@map("tags")
 }
 
 // ============================================================
-// SURVEYS
+// POLLS
 // ============================================================
 
-model Survey {
-  id                   String       @id @default(uuid())
+model Poll {
+  id                   String     @id @default(uuid())
   title                String
   description          String
   categoryId           String
   thumbnail            String?
-  surveyUrl            String
+  pollUrl              String
   completionCode       String?
   estimatedTimeMinutes Int
   targetResponses      Int
-  currentResponses     Int          @default(0)
+  currentResponses     Int        @default(0)
   reward               Int
   publishingCost       Int
   boostCost            Int?
-  priorityLevel        Int          @default(0)
+  priorityLevel        Int        @default(0)
   boostExpiresAt       DateTime?
   deadline             DateTime
-  status               SurveyStatus @default(DRAFT)
+  status               PollStatus @default(DRAFT)
 
   targetAcademicLevel AcademicLevel?
   targetCountry       String?
@@ -366,34 +367,34 @@ model Survey {
   archivedAt   DateTime?
   deletedAt    DateTime?
 
-  creator     User         @relation("SurveyCreator", fields: [creatorId], references: [id])
+  creator     User         @relation("PollCreator", fields: [creatorId], references: [id])
   institution Institution? @relation(fields: [institutionId], references: [id])
   category    Category     @relation(fields: [categoryId], references: [id])
-  responses   SurveyResponse[]
-  bookmarks   SurveyBookmark[]
-  reports     SurveyReport[]
-  tags        SurveyTag[]
+  responses   PollResponse[]
+  bookmarks   PollBookmark[]
+  reports     PollReport[]
+  tags        PollTag[]
 
   @@index([status])
   @@index([creatorId])
   @@index([categoryId])
-  @@map("surveys")
+  @@map("polls")
 }
 
-model SurveyTag {
-  surveyId String
-  tagId    String
+model PollTag {
+  pollId String
+  tagId  String
 
-  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-  @@id([surveyId, tagId])
-  @@map("survey_tags")
+  @@id([pollId, tagId])
+  @@map("poll_tags")
 }
 
-model SurveyResponse {
+model PollResponse {
   id             String    @id @default(uuid())
-  surveyId       String
+  pollId         String
   userId         String
   startedAt      DateTime  @default(now())
   completedAt    DateTime?
@@ -404,40 +405,40 @@ model SurveyResponse {
   device         String?
   createdAt      DateTime  @default(now())
 
-  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([surveyId, userId])
-  @@map("survey_responses")
+  @@unique([pollId, userId])
+  @@map("poll_responses")
 }
 
-model SurveyBookmark {
+model PollBookmark {
   id        String   @id @default(uuid())
-  surveyId  String
+  pollId    String
   userId    String
   createdAt DateTime @default(now())
 
-  survey Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([surveyId, userId])
-  @@map("survey_bookmarks")
+  @@unique([pollId, userId])
+  @@map("poll_bookmarks")
 }
 
-model SurveyReport {
-  id          String              @id @default(uuid())
-  surveyId    String
+model PollReport {
+  id          String            @id @default(uuid())
+  pollId      String
   reporterId  String
-  reason      SurveyReportReason
+  reason      PollReportReason
   description String?
-  status      ReportStatus        @default(OPEN)
-  createdAt   DateTime            @default(now())
+  status      ReportStatus      @default(OPEN)
+  createdAt   DateTime          @default(now())
   resolvedAt  DateTime?
 
-  survey   Survey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  reporter User   @relation("ReportedBy", fields: [reporterId], references: [id], onDelete: Cascade)
+  poll     Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  reporter User @relation("ReportedBy", fields: [reporterId], references: [id], onDelete: Cascade)
 
-  @@map("survey_reports")
+  @@map("poll_reports")
 }
 
 // ============================================================

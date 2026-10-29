@@ -1,12 +1,13 @@
 export interface Category {
   id: string;
   name: string;
+  nameAr: string | null;
   slug: string;
   icon: string | null;
   color: string | null;
 }
 
-export type SurveyStatus =
+export type PollStatus =
   | "DRAFT"
   | "PENDING_REVIEW"
   | "APPROVED"
@@ -18,28 +19,28 @@ export type SurveyStatus =
   | "ARCHIVED"
   | "DELETED";
 
-export interface SurveyCreator {
+export interface PollCreator {
   id: string;
   firstName: string;
   lastName: string;
   avatar: string | null;
 }
 
-export interface SurveyInstitution {
+export interface PollInstitution {
   id: string;
   name: string;
   verified: boolean;
   logo: string | null;
 }
 
-export interface Survey {
+export interface Poll {
   id: string;
   title: string;
   description: string;
   categoryId: string;
   category: Category;
   thumbnail: string | null;
-  surveyUrl: string;
+  pollUrl: string;
   completionCode: string | null;
   estimatedTimeMinutes: number;
   targetResponses: number;
@@ -47,22 +48,22 @@ export interface Survey {
   reward: number;
   publishingCost: number;
   deadline: string;
-  status: SurveyStatus;
+  status: PollStatus;
   views: number;
   creatorId: string;
-  creator: SurveyCreator;
-  institution: SurveyInstitution | null;
+  creator: PollCreator;
+  institution: PollInstitution | null;
   tags: { tag: { id: string; name: string } }[];
   createdAt: string;
   publishedAt: string | null;
   viewerState?: { bookmarked: boolean; completed: boolean };
 }
 
-export interface CreateSurveyPayload {
+export interface CreatePollPayload {
   title: string;
   description: string;
   categoryId: string;
-  surveyUrl: string;
+  pollUrl: string;
   completionCode?: string;
   estimatedTimeMinutes: number;
   targetResponses: number;

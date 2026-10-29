@@ -1,11 +1,11 @@
 import { apiClient, ApiEnvelope } from "@/lib/api/client";
-import { Survey } from "@/types/survey";
+import { Poll } from "@/types/poll";
 
 export interface DashboardStatistics {
   points: number;
   reputation: number;
-  completedSurveys: number;
-  publishedSurveys: number;
+  completedPolls: number;
+  publishedPolls: number;
   bookmarks: number;
   achievements: number;
 }
@@ -18,6 +18,6 @@ export async function fetchDashboardStatistics() {
 }
 
 export async function fetchRecommendations() {
-  const { data } = await apiClient.get<ApiEnvelope<Survey[]>>("/dashboard/recommendations");
+  const { data } = await apiClient.get<ApiEnvelope<Poll[]>>("/dashboard/recommendations");
   return data.data;
 }

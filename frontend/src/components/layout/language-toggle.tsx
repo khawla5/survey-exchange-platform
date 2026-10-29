@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { setLanguage } from "@/lib/i18n/config";
 
 export function LanguageToggle() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
 
   return (
@@ -15,7 +15,7 @@ export function LanguageToggle() {
       variant="ghost"
       size="sm"
       onClick={() => setLanguage(isArabic ? "en" : "ar")}
-      aria-label="Toggle language"
+      aria-label={t("common.toggleLanguage")}
       className="gap-1.5"
     >
       <Languages className="size-4" />

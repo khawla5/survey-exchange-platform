@@ -66,12 +66,6 @@ function VerifyEmailContent() {
         <p className="text-sm text-muted-foreground">
           {t("auth.verifyEmail.subtitle", { email })}
         </p>
-        {process.env.NODE_ENV === "development" && (
-          <p className="rounded-lg bg-warning/10 px-3 py-2 text-xs text-warning">
-            Dev mode: use code <span className="font-mono font-semibold">000000</span> to skip
-            checking the Ethereal inbox.
-          </p>
-        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

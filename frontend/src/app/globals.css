@@ -178,4 +178,10 @@
   .font-hero {
     font-family: var(--font-hero);
   }
+
+  /* Mirrors directional icons (arrows, chevrons) in RTL. Do not apply to
+     icons that are symmetric or that shouldn't flip (e.g. brand logos). */
+  .icon-flip:dir(rtl) {
+    transform: scaleX(-1);
+  }
 }

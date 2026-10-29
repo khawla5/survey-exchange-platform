@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowDownLeft, ArrowUpRight, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,18 +11,20 @@ import { usePointsHistory } from "@/lib/points/use-points";
 import { cn } from "@/lib/utils";
 
 export default function PointsHistoryPage() {
+  const { t, i18n } = useTranslation();
   const [page, setPage] = React.useState(1);
   const { data, isLoading } = usePointsHistory(page);
+  const locale = i18n.language === "ar" ? "ar-SA" : "en-US";
 
   return (
     <AppShell>
       {(user) => (
         <>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Points history</h1>
+            <h1 className="text-2xl font-semibold">{t("points.title")}</h1>
             <div className="flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-primary">
               <Sparkles className="size-4" />
-              <span className="font-semibold">{user.points} pts</span>
+              <span className="font-semibold">{t("points.balance", { points: user.points })}</span>
             </div>
           </div>
 
@@ -46,15 +49,15 @@ export default function PointsHistoryPage() {
                         )}
                       >
                         {tx.amount >= 0 ? (
-                          <ArrowDownLeft className="size-4" />
+                          <ArrowDownLeft className="icon-flip size-4" />
                         ) : (
-                          <ArrowUpRight className="size-4" />
+                          <ArrowUpRight className="icon-flip size-4" />
                         )}
                       </div>
                       <div>
                         <p className="text-sm font-medium">{tx.description}</p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(tx.createdAt).toLocaleString()}
+                          {new Date(tx.createdAt).toLocaleString(locale)}
                         </p>
                       </div>
                     </div>
@@ -68,13 +71,15 @@ export default function PointsHistoryPage() {
                         {tx.amount >= 0 ? "+" : ""}
                         {tx.amount}
                       </p>
-                      <p className="text-xs text-muted-foreground">Balance: {tx.balanceAfter}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("points.balanceLabel", { amount: tx.balanceAfter })}
+                      </p>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="p-12 text-center text-sm text-muted-foreground">
-                  No transactions yet.
+                  {t("points.empty")}
                 </div>
               )}
             </CardContent>
@@ -83,10 +88,10 @@ export default function PointsHistoryPage() {
           {data && data.pagination && data.pagination.totalPages > 1 && (
             <div className="flex items-center justify-center gap-2">
               <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-                Previous
+                {t("common.previous")}
               </Button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {data.pagination.totalPages}
+                {t("common.pageOf", { page, total: data.pagination.totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -94,7 +99,7 @@ export default function PointsHistoryPage() {
                 disabled={page >= data.pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
-                Next
+                {t("common.next")}
               </Button>
             </div>
           )}

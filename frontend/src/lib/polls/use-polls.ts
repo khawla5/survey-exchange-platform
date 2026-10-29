@@ -2,38 +2,38 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  completeSurvey,
-  createSurvey,
-  deleteSurvey,
-  fetchSurvey,
-  fetchSurveys,
-  reportSurvey,
-  SurveyListParams,
+  completePoll,
+  createPoll,
+  deletePoll,
+  fetchPoll,
+  fetchPolls,
+  reportPoll,
+  PollListParams,
   toggleBookmark,
-} from "@/lib/surveys/api";
+} from "@/lib/polls/api";
 import { ME_QUERY_KEY } from "@/lib/auth/use-auth";
 
-export function useSurveys(params: SurveyListParams) {
+export function usePolls(params: PollListParams) {
   return useQuery({
-    queryKey: ["surveys", params],
-    queryFn: () => fetchSurveys(params),
+    queryKey: ["polls", params],
+    queryFn: () => fetchPolls(params),
   });
 }
 
-export function useSurvey(id: string) {
+export function usePoll(id: string) {
   return useQuery({
-    queryKey: ["surveys", id],
-    queryFn: () => fetchSurvey(id),
+    queryKey: ["polls", id],
+    queryFn: () => fetchPoll(id),
     enabled: !!id,
   });
 }
 
-export function useCreateSurvey() {
+export function useCreatePoll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createSurvey,
+    mutationFn: createPoll,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys"] });
+      queryClient.invalidateQueries({ queryKey: ["polls"] });
       queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
@@ -45,18 +45,18 @@ export function useToggleBookmark() {
   return useMutation({
     mutationFn: toggleBookmark,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys"] });
+      queryClient.invalidateQueries({ queryKey: ["polls"] });
     },
   });
 }
 
-export function useCompleteSurvey() {
+export function useCompletePoll() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, completionCode }: { id: string; completionCode?: string }) =>
-      completeSurvey(id, completionCode),
+      completePoll(id, completionCode),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys"] });
+      queryClient.invalidateQueries({ queryKey: ["polls"] });
       queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["points"] });
@@ -64,20 +64,20 @@ export function useCompleteSurvey() {
   });
 }
 
-export function useDeleteSurvey() {
+export function useDeletePoll() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteSurvey,
+    mutationFn: deletePoll,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surveys"] });
+      queryClient.invalidateQueries({ queryKey: ["polls"] });
       queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
     },
   });
 }
 
-export function useReportSurvey() {
+export function useReportPoll() {
   return useMutation({
     mutationFn: ({ id, reason, description }: { id: string; reason: string; description?: string }) =>
-      reportSurvey(id, reason, description),
+      reportPoll(id, reason, description),
   });
 }

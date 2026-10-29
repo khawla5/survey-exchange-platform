@@ -27,12 +27,9 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
           className="relative space-y-4"
         >
           <h1 className="font-hero text-4xl leading-tight font-bold xl:text-5xl">
-            Answer surveys. Earn points. Publish your own.
+            {t("auth.heroTitle")}
           </h1>
-          <p className="max-w-md text-white/90">
-            A point-based exchange for students, researchers, professors and universities to trade
-            real survey responses — no cash, no cold outreach.
-          </p>
+          <p className="max-w-md text-white/90">{t("auth.heroSubtitle")}</p>
         </motion.div>
 
         <div className="relative text-sm text-white/80">

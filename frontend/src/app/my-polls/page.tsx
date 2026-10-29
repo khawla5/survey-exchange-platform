@@ -2,44 +2,46 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { PlusCircle } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import { SurveyCard } from "@/components/surveys/survey-card";
+import { PollCard } from "@/components/polls/poll-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSurveys } from "@/lib/surveys/use-surveys";
+import { usePolls } from "@/lib/polls/use-polls";
 
-const tabs = [
-  { value: "", label: "All" },
-  { value: "DRAFT", label: "Draft" },
-  { value: "LIVE", label: "Live" },
-  { value: "COMPLETED", label: "Completed" },
-  { value: "DELETED", label: "Archived" },
-];
+const tabKeys = [
+  { value: "", key: "all" },
+  { value: "DRAFT", key: "draft" },
+  { value: "LIVE", key: "live" },
+  { value: "COMPLETED", key: "completed" },
+  { value: "DELETED", key: "archived" },
+] as const;
 
-export default function MySurveysPage() {
+export default function MyPollsPage() {
+  const { t } = useTranslation();
   const [status, setStatus] = React.useState("");
-  const { data, isLoading } = useSurveys({ mine: true, status: status || undefined, limit: 24 });
+  const { data, isLoading } = usePolls({ mine: true, status: status || undefined, limit: 24 });
 
   return (
     <AppShell>
       {() => (
         <>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">My surveys</h1>
+            <h1 className="text-2xl font-semibold">{t("polls.mine.title")}</h1>
             <Button asChild size="sm" className="gap-1.5">
-              <Link href="/surveys/create">
-                <PlusCircle className="size-4" /> Create survey
+              <Link href="/polls/create">
+                <PlusCircle className="size-4" /> {t("polls.mine.createPoll")}
               </Link>
             </Button>
           </div>
 
           <Tabs value={status} onValueChange={setStatus}>
             <TabsList>
-              {tabs.map((tab) => (
+              {tabKeys.map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value}>
-                  {tab.label}
+                  {t(`polls.mine.tabs.${tab.key}`)}
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -53,18 +55,16 @@ export default function MySurveysPage() {
             </div>
           ) : data && data.data.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {data.data.map((survey) => (
-                <SurveyCard key={survey.id} survey={survey} />
+              {data.data.map((poll) => (
+                <PollCard key={poll.id} poll={poll} />
               ))}
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-              <p className="font-medium">No surveys yet</p>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Publish your first survey to start collecting responses.
-              </p>
+              <p className="font-medium">{t("polls.mine.emptyTitle")}</p>
+              <p className="mb-4 text-sm text-muted-foreground">{t("polls.mine.emptyBody")}</p>
               <Button asChild>
-                <Link href="/surveys/create">Create survey</Link>
+                <Link href="/polls/create">{t("polls.mine.createPoll")}</Link>
               </Button>
             </div>
           )}

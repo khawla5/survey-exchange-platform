@@ -22,13 +22,13 @@ import { AuthUser } from "@/types/auth";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/surveys", label: "Browse" },
-  { href: "/my-surveys", label: "My Surveys" },
-  { href: "/points", label: "Points" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/achievements", label: "Achievements" },
-];
+  { href: "/dashboard", key: "nav.dashboard" },
+  { href: "/polls", key: "nav.browse" },
+  { href: "/my-polls", key: "nav.myPolls" },
+  { href: "/points", key: "nav.points" },
+  { href: "/leaderboard", key: "nav.leaderboard" },
+  { href: "/achievements", key: "nav.achievements" },
+] as const;
 
 export function DashboardHeader({ user }: { user: AuthUser }) {
   const { t } = useTranslation();
@@ -62,7 +62,7 @@ export function DashboardHeader({ user }: { user: AuthUser }) {
                   pathname === link.href && "bg-primary/10 text-primary"
                 )}
               >
-                {link.label}
+                {t(link.key)}
               </Link>
             ))}
           </nav>
@@ -70,9 +70,9 @@ export function DashboardHeader({ user }: { user: AuthUser }) {
 
         <div className="flex shrink-0 items-center gap-1.5">
           <Button asChild size="sm" className="hidden gap-1.5 md:flex">
-            <Link href="/surveys/create">
+            <Link href="/polls/create">
               <PlusCircle className="size-4" />
-              <span className="hidden lg:inline">Create</span>
+              <span className="hidden lg:inline">{t("nav.create")}</span>
             </Link>
           </Button>
 

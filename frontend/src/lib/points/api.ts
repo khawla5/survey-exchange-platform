@@ -1,5 +1,5 @@
 import { apiClient, ApiEnvelope } from "@/lib/api/client";
-import { Transaction } from "@/types/survey";
+import { Transaction } from "@/types/poll";
 
 export async function fetchPointsBalance() {
   const { data } = await apiClient.get<ApiEnvelope<{ points: number; reputation: number }>>(

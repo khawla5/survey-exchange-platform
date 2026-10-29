@@ -1,32 +1,32 @@
 import { prisma } from "@/database/prisma";
 import { ApiError } from "@/shared/ApiError";
 import { pointsService } from "@/modules/points/points.service";
-import { surveysRepository } from "@/modules/surveys/surveys.repository";
+import { pollsRepository } from "@/modules/polls/polls.repository";
 import { achievementsService } from "@/modules/achievements/achievements.service";
 import { notificationsService } from "@/modules/notifications/notifications.service";
 import { hashToken } from "@/utils/crypto";
 import type {
-  CompleteSurveyInput,
-  CreateSurveyInput,
-  ListSurveysQuery,
-  ReportSurveyInput,
-  UpdateSurveyInput,
-} from "@/modules/surveys/surveys.validation";
+  CompletePollInput,
+  CreatePollInput,
+  ListPollsQuery,
+  ReportPollInput,
+  UpdatePollInput,
+} from "@/modules/polls/polls.validation";
 
 const LOCKED_FIELDS_AFTER_RESPONSES = [
   "reward",
   "targetResponses",
   "deadline",
-  "surveyUrl",
+  "pollUrl",
 ] as const;
 
-function toDbInput(input: CreateSurveyInput) {
+function toDbInput(input: CreatePollInput) {
   return {
     title: input.title,
     description: input.description,
     categoryId: input.categoryId,
     thumbnail: input.thumbnail || null,
-    surveyUrl: input.surveyUrl,
+    pollUrl: input.pollUrl,
     completionCode: input.completionCode || null,
     estimatedTimeMinutes: input.estimatedTimeMinutes,
     targetAcademicLevel: input.targetAcademicLevel,
@@ -41,8 +41,8 @@ function toDbInput(input: CreateSurveyInput) {
   };
 }
 
-export const surveysService = {
-  async create(creatorId: string, input: CreateSurveyInput) {
+export const pollsService = {
+  async create(creatorId: string, input: CreatePollInput) {
     const publishingCost = input.publish ? input.targetResponses * input.reward : 0;
 
     return prisma.$transaction(async (tx) => {
@@ -51,13 +51,13 @@ export const surveysService = {
           userId: creatorId,
           type: "SPEND_PUBLISH",
           amount: publishingCost,
-          description: `Published survey: ${input.title}`,
+          description: `Published poll: ${input.title}`,
         });
       }
 
       const user = await tx.user.findUniqueOrThrow({ where: { id: creatorId } });
 
-      const survey = await tx.survey.create({
+      const poll = await tx.poll.create({
         data: {
           ...toDbInput(input),
           creatorId,
@@ -89,41 +89,41 @@ export const surveysService = {
       if (input.publish) {
         await tx.transaction.updateMany({
           where: { userId: creatorId, referenceId: null, type: "SPEND_PUBLISH" },
-          data: { referenceType: "survey", referenceId: survey.id },
+          data: { referenceType: "poll", referenceId: poll.id },
         });
       }
 
-      return survey;
-    }).then(async (survey) => {
+      return poll;
+    }).then(async (poll) => {
       if (input.publish) {
-        await achievementsService.checkAndUnlock(creatorId, "surveys_published");
+        await achievementsService.checkAndUnlock(creatorId, "polls_published");
       }
-      return survey;
+      return poll;
     });
   },
 
   async getById(id: string, viewerId: string | undefined) {
-    const survey = await surveysRepository.findById(id);
-    if (!survey) throw ApiError.notFound("Survey not found");
+    const poll = await pollsRepository.findById(id);
+    if (!poll) throw ApiError.notFound("Poll not found");
 
-    if (viewerId !== survey.creatorId) {
-      await surveysRepository.incrementViews(id);
+    if (viewerId !== poll.creatorId) {
+      await pollsRepository.incrementViews(id);
     }
 
     let viewerState: { bookmarked: boolean; completed: boolean } | undefined;
     if (viewerId) {
       const [bookmark, response] = await Promise.all([
-        surveysRepository.findBookmark(id, viewerId),
-        surveysRepository.findResponse(id, viewerId),
+        pollsRepository.findBookmark(id, viewerId),
+        pollsRepository.findResponse(id, viewerId),
       ]);
       viewerState = { bookmarked: !!bookmark, completed: !!response };
     }
 
-    return { ...survey, viewerState };
+    return { ...poll, viewerState };
   },
 
-  async list(query: ListSurveysQuery, viewerId: string | undefined) {
-    const { items, total } = await surveysRepository.list(query, viewerId);
+  async list(query: ListPollsQuery, viewerId: string | undefined) {
+    const { items, total } = await pollsRepository.list(query, viewerId);
     return {
       items,
       pagination: {
@@ -135,23 +135,23 @@ export const surveysService = {
     };
   },
 
-  async update(id: string, userId: string, input: UpdateSurveyInput) {
-    const survey = await surveysRepository.findById(id);
-    if (!survey) throw ApiError.notFound("Survey not found");
-    if (survey.creatorId !== userId) throw ApiError.forbidden("You do not own this survey");
+  async update(id: string, userId: string, input: UpdatePollInput) {
+    const poll = await pollsRepository.findById(id);
+    if (!poll) throw ApiError.notFound("Poll not found");
+    if (poll.creatorId !== userId) throw ApiError.forbidden("You do not own this poll");
 
-    if (survey.currentResponses > 0) {
+    if (poll.currentResponses > 0) {
       for (const field of LOCKED_FIELDS_AFTER_RESPONSES) {
         if (input[field] !== undefined) {
           throw ApiError.badRequest(
-            `${field} cannot be changed after a survey has received responses`
+            `${field} cannot be changed after a poll has received responses`
           );
         }
       }
     }
 
     const { tags, ...rest } = input;
-    return surveysRepository.updateSurvey(id, {
+    return pollsRepository.updatePoll(id, {
       ...rest,
       ...(tags
         ? {
@@ -172,39 +172,39 @@ export const surveysService = {
   },
 
   async publishDraft(id: string, userId: string) {
-    const survey = await surveysRepository.findById(id);
-    if (!survey) throw ApiError.notFound("Survey not found");
-    if (survey.creatorId !== userId) throw ApiError.forbidden("You do not own this survey");
-    if (survey.status !== "DRAFT") throw ApiError.badRequest("Only draft surveys can be published");
+    const poll = await pollsRepository.findById(id);
+    if (!poll) throw ApiError.notFound("Poll not found");
+    if (poll.creatorId !== userId) throw ApiError.forbidden("You do not own this poll");
+    if (poll.status !== "DRAFT") throw ApiError.badRequest("Only draft polls can be published");
 
-    const cost = survey.targetResponses * survey.reward;
+    const cost = poll.targetResponses * poll.reward;
 
     return prisma.$transaction(async (tx) => {
       await pointsService.debit(tx, {
         userId,
         type: "SPEND_PUBLISH",
         amount: cost,
-        description: `Published survey: ${survey.title}`,
-        referenceType: "survey",
-        referenceId: survey.id,
+        description: `Published poll: ${poll.title}`,
+        referenceType: "poll",
+        referenceId: poll.id,
       });
-      return tx.survey.update({
+      return tx.poll.update({
         where: { id },
         data: { status: "LIVE", publishedAt: new Date(), publishingCost: cost },
       });
     }).then(async (updated) => {
-      await achievementsService.checkAndUnlock(userId, "surveys_published");
+      await achievementsService.checkAndUnlock(userId, "polls_published");
       return updated;
     });
   },
 
   async remove(id: string, userId: string) {
-    const survey = await surveysRepository.findById(id);
-    if (!survey) throw ApiError.notFound("Survey not found");
-    if (survey.creatorId !== userId) throw ApiError.forbidden("You do not own this survey");
+    const poll = await pollsRepository.findById(id);
+    if (!poll) throw ApiError.notFound("Poll not found");
+    if (poll.creatorId !== userId) throw ApiError.forbidden("You do not own this poll");
 
-    const remainingSlots = survey.targetResponses - survey.currentResponses;
-    const refundAmount = survey.status === "LIVE" && remainingSlots > 0 ? remainingSlots * survey.reward : 0;
+    const remainingSlots = poll.targetResponses - poll.currentResponses;
+    const refundAmount = poll.status === "LIVE" && remainingSlots > 0 ? remainingSlots * poll.reward : 0;
 
     await prisma.$transaction(async (tx) => {
       if (refundAmount > 0) {
@@ -212,12 +212,12 @@ export const surveysService = {
           userId,
           type: "EARN_REFUND",
           amount: refundAmount,
-          description: `Refund for closing survey: ${survey.title}`,
-          referenceType: "survey",
-          referenceId: survey.id,
+          description: `Refund for closing poll: ${poll.title}`,
+          referenceType: "poll",
+          referenceId: poll.id,
         });
       }
-      await tx.survey.update({
+      await tx.poll.update({
         where: { id },
         data: { deletedAt: new Date(), status: "DELETED" },
       });
@@ -226,100 +226,100 @@ export const surveysService = {
     return { deleted: true, refundAmount };
   },
 
-  async toggleBookmark(surveyId: string, userId: string) {
-    const survey = await surveysRepository.findById(surveyId);
-    if (!survey) throw ApiError.notFound("Survey not found");
+  async toggleBookmark(pollId: string, userId: string) {
+    const poll = await pollsRepository.findById(pollId);
+    if (!poll) throw ApiError.notFound("Poll not found");
 
-    const existing = await surveysRepository.findBookmark(surveyId, userId);
+    const existing = await pollsRepository.findBookmark(pollId, userId);
     if (existing) {
-      await surveysRepository.deleteBookmark(surveyId, userId);
+      await pollsRepository.deleteBookmark(pollId, userId);
       return { bookmarked: false };
     }
-    await surveysRepository.createBookmark(surveyId, userId);
+    await pollsRepository.createBookmark(pollId, userId);
     return { bookmarked: true };
   },
 
-  async report(surveyId: string, userId: string, input: ReportSurveyInput) {
-    const survey = await surveysRepository.findById(surveyId);
-    if (!survey) throw ApiError.notFound("Survey not found");
-    await surveysRepository.createReport(surveyId, userId, input.reason, input.description);
+  async report(pollId: string, userId: string, input: ReportPollInput) {
+    const poll = await pollsRepository.findById(pollId);
+    if (!poll) throw ApiError.notFound("Poll not found");
+    await pollsRepository.createReport(pollId, userId, input.reason, input.description);
     return { reported: true };
   },
 
-  async complete(surveyId: string, userId: string, input: CompleteSurveyInput) {
-    const survey = await surveysRepository.findById(surveyId);
-    if (!survey) throw ApiError.notFound("Survey not found");
+  async complete(pollId: string, userId: string, input: CompletePollInput) {
+    const poll = await pollsRepository.findById(pollId);
+    if (!poll) throw ApiError.notFound("Poll not found");
 
-    if (survey.creatorId === userId) {
-      throw ApiError.badRequest("You cannot complete your own survey");
+    if (poll.creatorId === userId) {
+      throw ApiError.badRequest("You cannot complete your own poll");
     }
-    if (survey.status !== "LIVE") {
-      throw ApiError.badRequest("This survey is not currently accepting responses");
+    if (poll.status !== "LIVE") {
+      throw ApiError.badRequest("This poll is not currently accepting responses");
     }
-    if (survey.deadline < new Date()) {
-      throw ApiError.badRequest("This survey has expired");
+    if (poll.deadline < new Date()) {
+      throw ApiError.badRequest("This poll has expired");
     }
-    if (survey.currentResponses >= survey.targetResponses) {
-      throw ApiError.badRequest("This survey has already reached its target responses");
+    if (poll.currentResponses >= poll.targetResponses) {
+      throw ApiError.badRequest("This poll has already reached its target responses");
     }
 
-    const existing = await surveysRepository.findResponse(surveyId, userId);
+    const existing = await pollsRepository.findResponse(pollId, userId);
     if (existing) {
-      throw ApiError.conflict("You have already completed this survey");
+      throw ApiError.conflict("You have already completed this poll");
     }
 
-    if (survey.completionCode && input.completionCode) {
-      if (hashToken(input.completionCode) !== hashToken(survey.completionCode)) {
+    if (poll.completionCode && input.completionCode) {
+      if (hashToken(input.completionCode) !== hashToken(poll.completionCode)) {
         throw ApiError.badRequest("Incorrect completion code");
       }
     }
 
     return prisma.$transaction(async (tx) => {
-      await tx.surveyResponse.create({
+      await tx.pollResponse.create({
         data: {
-          surveyId,
+          pollId,
           userId,
           completedAt: new Date(),
           completionCode: input.completionCode,
-          pointsAwarded: survey.reward,
+          pointsAwarded: poll.reward,
         },
       });
 
-      const updatedSurvey = await tx.survey.update({
-        where: { id: surveyId },
+      const updatedPoll = await tx.poll.update({
+        where: { id: pollId },
         data: {
           currentResponses: { increment: 1 },
           status:
-            survey.currentResponses + 1 >= survey.targetResponses ? "COMPLETED" : undefined,
+            poll.currentResponses + 1 >= poll.targetResponses ? "COMPLETED" : undefined,
         },
       });
 
       await pointsService.credit(tx, {
         userId,
         type: "EARN_COMPLETION",
-        amount: survey.reward,
-        description: `Completed survey: ${survey.title}`,
-        referenceType: "survey",
-        referenceId: surveyId,
+        amount: poll.reward,
+        description: `Completed poll: ${poll.title}`,
+        referenceType: "poll",
+        referenceId: pollId,
       });
 
-      return { pointsAwarded: survey.reward, surveyStatus: updatedSurvey.status };
+      return { pointsAwarded: poll.reward, pollStatus: updatedPoll.status };
     }).then(async (result) => {
       await notificationsService.notify({
-        userId: survey.creatorId,
-        title: "New response on your survey",
-        message: `Someone completed "${survey.title}" (${survey.currentResponses + 1}/${survey.targetResponses})`,
-        type: "SURVEY_COMPLETED",
-        actionUrl: `/surveys/${surveyId}`,
+        userId: poll.creatorId,
+        title: "New response on your poll",
+        message: `Someone completed "${poll.title}" (${poll.currentResponses + 1}/${poll.targetResponses})`,
+        type: "POLL_COMPLETED",
+        actionUrl: `/polls/${pollId}`,
       });
       await notificationsService.notify({
         userId,
         title: "Points earned",
-        message: `You earned ${survey.reward} points for completing "${survey.title}"`,
+        message: `You earned ${poll.reward} points for completing "${poll.title}"`,
         type: "POINTS_EARNED",
         actionUrl: "/points",
       });
-      await achievementsService.checkAndUnlock(userId, "surveys_completed");
+      await achievementsService.checkAndUnlock(userId, "polls_completed");
       return result;
     });
   },

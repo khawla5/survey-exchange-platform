@@ -2,43 +2,48 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Bookmark, BookmarkCheck, Building2, Clock, Sparkles, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Survey } from "@/types/survey";
-import { useToggleBookmark } from "@/lib/surveys/use-surveys";
+import { Poll } from "@/types/poll";
+import { useToggleBookmark } from "@/lib/polls/use-polls";
 import { cn } from "@/lib/utils";
 import { daysUntil } from "@/lib/date-utils";
+import { localizedCategoryName } from "@/lib/categories/localized-name";
 
-export function SurveyCard({ survey }: { survey: Survey }) {
+export function PollCard({ poll }: { poll: Poll }) {
+  const { t, i18n } = useTranslation();
   const bookmarkMutation = useToggleBookmark();
-  const progress = Math.min(100, (survey.currentResponses / survey.targetResponses) * 100);
-  const daysLeft = daysUntil(survey.deadline);
-  const initials = `${survey.creator.firstName[0]}${survey.creator.lastName[0]}`.toUpperCase();
+  const progress = Math.min(100, (poll.currentResponses / poll.targetResponses) * 100);
+  const daysLeft = daysUntil(poll.deadline);
+  const initials = `${poll.creator.firstName[0]}${poll.creator.lastName[0]}`.toUpperCase();
 
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
       <Card className="flex h-full flex-col gap-3 overflow-hidden border-border p-0">
         <div
           className="flex h-28 items-center justify-center bg-gradient-to-br from-[#F08080] via-[#F4978E] to-[#FBC4AB] text-white"
-          style={survey.category.color ? { background: survey.category.color } : undefined}
+          style={poll.category.color ? { background: poll.category.color } : undefined}
         >
-          <span className="text-sm font-medium opacity-90">{survey.category.name}</span>
+          <span className="text-sm font-medium opacity-90">
+            {localizedCategoryName(poll.category, i18n.language)}
+          </span>
         </div>
 
         <div className="flex flex-1 flex-col gap-3 px-4 pb-4">
           <div className="flex items-start justify-between gap-2">
-            <Link href={`/surveys/${survey.id}`} className="line-clamp-2 font-semibold hover:underline">
-              {survey.title}
+            <Link href={`/polls/${poll.id}`} className="line-clamp-2 font-semibold hover:underline">
+              {poll.title}
             </Link>
             <button
-              onClick={() => bookmarkMutation.mutate(survey.id)}
+              onClick={() => bookmarkMutation.mutate(poll.id)}
               className="shrink-0 text-muted-foreground hover:text-primary"
-              aria-label="Bookmark"
+              aria-label={t("polls.card.bookmark")}
             >
-              {survey.viewerState?.bookmarked ? (
+              {poll.viewerState?.bookmarked ? (
                 <BookmarkCheck className="size-5 text-primary" />
               ) : (
                 <Bookmark className="size-5" />
@@ -46,24 +51,24 @@ export function SurveyCard({ survey }: { survey: Survey }) {
             </button>
           </div>
 
-          <p className="line-clamp-2 text-sm text-muted-foreground">{survey.description}</p>
+          <p className="line-clamp-2 text-sm text-muted-foreground">{poll.description}</p>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Clock className="size-3.5" /> {survey.estimatedTimeMinutes} min
+              <Clock className="size-3.5" /> {poll.estimatedTimeMinutes} {t("polls.card.minutes")}
             </span>
             <span className="flex items-center gap-1">
-              <Sparkles className="size-3.5 text-primary" /> {survey.reward} pts
+              <Sparkles className="size-3.5 text-primary" /> {poll.reward} {t("polls.card.pts")}
             </span>
             <span className={cn("flex items-center gap-1", daysLeft <= 2 && "text-warning")}>
-              {daysLeft}d left
+              {t("polls.card.daysLeft", { count: daysLeft })}
             </span>
           </div>
 
           <div className="space-y-1">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Users className="size-3.5" /> {survey.currentResponses}/{survey.targetResponses}
+                <Users className="size-3.5" /> {poll.currentResponses}/{poll.targetResponses}
               </span>
               <span>{Math.round(progress)}%</span>
             </div>
@@ -76,13 +81,15 @@ export function SurveyCard({ survey }: { survey: Survey }) {
                 <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
               </Avatar>
               <span className="text-xs text-muted-foreground">
-                {survey.creator.firstName} {survey.creator.lastName}
+                {poll.creator.firstName} {poll.creator.lastName}
               </span>
-              {survey.institution?.verified && <Building2 className="size-3.5 text-info" />}
+              {poll.institution?.verified && <Building2 className="size-3.5 text-info" />}
             </div>
             <Button asChild size="sm" variant="secondary">
-              <Link href={`/surveys/${survey.id}`}>
-                {survey.viewerState?.completed ? "Completed" : "Participate"}
+              <Link href={`/polls/${poll.id}`}>
+                {poll.viewerState?.completed
+                  ? t("polls.card.completed")
+                  : t("polls.card.participate")}
               </Link>
             </Button>
           </div>

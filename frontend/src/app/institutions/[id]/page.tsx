@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Building2, CheckCircle2, FileCheck2, Sparkles, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +25,7 @@ function StatBlock({ icon: Icon, label, value }: { icon: React.ElementType; labe
 }
 
 export default function InstitutionDetailsPage() {
+  const { t } = useTranslation();
   const params = useParams<{ id: string }>();
   const { data: institution, isLoading } = useInstitution(params.id);
   const { data: membersData } = useInstitutionMembers(params.id);
@@ -51,7 +53,7 @@ export default function InstitutionDetailsPage() {
                   <h1 className="text-2xl font-semibold">{institution.name}</h1>
                   {institution.verified && (
                     <Badge className="gap-1 bg-info text-info-foreground">
-                      <CheckCircle2 className="size-3.5" /> Verified
+                      <CheckCircle2 className="size-3.5" /> {t("institutions.verified")}
                     </Badge>
                   )}
                 </div>
@@ -62,15 +64,27 @@ export default function InstitutionDetailsPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatBlock icon={Users} label="Members" value={institution.stats.memberCount} />
-              <StatBlock icon={FileCheck2} label="Live surveys" value={institution.stats.liveSurveyCount} />
-              <StatBlock icon={CheckCircle2} label="Completed surveys" value={institution.stats.completedSurveyCount} />
-              <StatBlock icon={Sparkles} label="Total points" value={institution.stats.totalPoints} />
+              <StatBlock icon={Users} label={t("institutions.members")} value={institution.stats.memberCount} />
+              <StatBlock
+                icon={FileCheck2}
+                label={t("institutions.livePolls")}
+                value={institution.stats.livePollCount}
+              />
+              <StatBlock
+                icon={CheckCircle2}
+                label={t("institutions.completedPolls")}
+                value={institution.stats.completedPollCount}
+              />
+              <StatBlock
+                icon={Sparkles}
+                label={t("institutions.totalPoints")}
+                value={institution.stats.totalPoints}
+              />
             </div>
 
             <Card>
               <CardContent className="p-5">
-                <p className="mb-3 text-sm font-semibold">Top contributors</p>
+                <p className="mb-3 text-sm font-semibold">{t("institutions.topContributors")}</p>
                 <div className="space-y-3">
                   {institution.topContributors.map((member) => {
                     const initials = `${member.firstName[0]}${member.lastName[0]}`.toUpperCase();
@@ -94,7 +108,9 @@ export default function InstitutionDetailsPage() {
 
             <Card>
               <CardContent className="p-5">
-                <p className="mb-3 text-sm font-semibold">All members ({membersData?.pagination?.total ?? 0})</p>
+                <p className="mb-3 text-sm font-semibold">
+                  {t("institutions.allMembers", { count: membersData?.pagination?.total ?? 0 })}
+                </p>
                 <div className="divide-y divide-border">
                   {membersData?.data.map((member) => {
                     const initials = `${member.firstName[0]}${member.lastName[0]}`.toUpperCase();
@@ -109,7 +125,9 @@ export default function InstitutionDetailsPage() {
                           </p>
                           <p className="text-xs text-muted-foreground">{member.role}</p>
                         </div>
-                        <span className="text-sm text-muted-foreground">{member.points} pts</span>
+                        <span className="text-sm text-muted-foreground">
+                          {member.points} {t("polls.card.pts")}
+                        </span>
                       </div>
                     );
                   })}

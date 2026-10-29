@@ -21,9 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Survey Exchange Platform",
+  title: "PollXchange",
   description:
-    "Exchange survey responses with students, researchers, professors and universities through a point-based ecosystem.",
+    "Exchange poll responses with students, researchers, professors and universities through a point-based ecosystem.",
 };
 
 const themeInitScript = `

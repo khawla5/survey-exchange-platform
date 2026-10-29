@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -9,7 +10,7 @@ interface PasswordInputProps extends Omit<React.ComponentProps<"input">, "type">
   showStrength?: boolean;
 }
 
-function getStrength(password: string): { score: number; label: string; color: string } {
+function getStrength(password: string): { score: number; labelKey: string; color: string } {
   let score = 0;
   if (password.length >= 8) score++;
   if (/[a-z]/.test(password)) score++;
@@ -17,14 +18,15 @@ function getStrength(password: string): { score: number; label: string; color: s
   if (/[0-9]/.test(password)) score++;
   if (/[^A-Za-z0-9]/.test(password)) score++;
 
-  if (score <= 2) return { score, label: "Weak", color: "bg-destructive" };
-  if (score <= 3) return { score, label: "Fair", color: "bg-warning" };
-  if (score <= 4) return { score, label: "Good", color: "bg-info" };
-  return { score, label: "Strong", color: "bg-success" };
+  if (score <= 2) return { score, labelKey: "common.passwordStrength.weak", color: "bg-destructive" };
+  if (score <= 3) return { score, labelKey: "common.passwordStrength.fair", color: "bg-warning" };
+  if (score <= 4) return { score, labelKey: "common.passwordStrength.good", color: "bg-info" };
+  return { score, labelKey: "common.passwordStrength.strong", color: "bg-success" };
 }
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, showStrength, value, ...props }, ref) => {
+    const { t } = useTranslation();
     const [visible, setVisible] = React.useState(false);
     const strength = showStrength ? getStrength(String(value ?? "")) : null;
 
@@ -43,7 +45,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
             onClick={() => setVisible((v) => !v)}
             className="absolute inset-y-0 end-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
             tabIndex={-1}
-            aria-label={visible ? "Hide password" : "Show password"}
+            aria-label={visible ? t("common.hidePassword") : t("common.showPassword")}
           >
             {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
@@ -61,7 +63,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
                 />
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">{strength.label}</p>
+            <p className="text-xs text-muted-foreground">{t(strength.labelKey)}</p>
           </div>
         )}
       </div>
