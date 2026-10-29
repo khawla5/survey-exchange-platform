@@ -19,7 +19,7 @@ export const institutionsController = {
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
-        include: { _count: { select: { members: true, polls: true } } },
+        include: { _count: { select: { members: true, surveys: true } } },
       }),
       prisma.institution.count({ where: { deletedAt: null } }),
     ]);
@@ -35,13 +35,13 @@ export const institutionsController = {
     });
     if (!institution) throw ApiError.notFound("Institution not found");
 
-    const [memberCount, livePollCount, completedPollCount, totalPoints, topContributors] =
+    const [memberCount, liveSurveyCount, completedSurveyCount, totalPoints, topContributors] =
       await Promise.all([
         prisma.user.count({ where: { institutionId: institution.id, deletedAt: null } }),
-        prisma.poll.count({
+        prisma.survey.count({
           where: { institutionId: institution.id, status: "LIVE", deletedAt: null },
         }),
-        prisma.poll.count({
+        prisma.survey.count({
           where: { institutionId: institution.id, status: "COMPLETED", deletedAt: null },
         }),
         prisma.user.aggregate({
@@ -61,8 +61,8 @@ export const institutionsController = {
         ...institution,
         stats: {
           memberCount,
-          livePollCount,
-          completedPollCount,
+          liveSurveyCount,
+          completedSurveyCount,
           totalPoints: totalPoints._sum.points ?? 0,
         },
         topContributors,

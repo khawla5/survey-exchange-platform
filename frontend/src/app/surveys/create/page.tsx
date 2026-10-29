@@ -23,34 +23,34 @@ import {
 } from "@/components/ui/select";
 import { useCategories } from "@/lib/categories/use-categories";
 import { localizedCategoryName } from "@/lib/categories/localized-name";
-import { useCreatePoll } from "@/lib/polls/use-polls";
+import { useCreateSurvey } from "@/lib/surveys/use-surveys";
 import { getApiErrorMessage } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
-  title: z.string().trim().min(3, "polls.create.errors.titleMin").max(200),
-  description: z.string().trim().min(10, "polls.create.errors.descriptionMin").max(5000),
-  categoryId: z.string().uuid("polls.create.errors.categoryRequired"),
-  pollUrl: z.string().trim().url("polls.create.errors.urlInvalid"),
+  title: z.string().trim().min(3, "surveys.create.errors.titleMin").max(200),
+  description: z.string().trim().min(10, "surveys.create.errors.descriptionMin").max(5000),
+  categoryId: z.string().uuid("surveys.create.errors.categoryRequired"),
+  surveyUrl: z.string().trim().url("surveys.create.errors.urlInvalid"),
   completionCode: z.string().trim().optional(),
   estimatedTimeMinutes: z.number().int().min(1).max(180),
   tags: z.string().optional(),
   targetCountry: z.string().trim().optional(),
   targetResponses: z.number().int().min(1).max(100000),
   reward: z.number().int().min(1).max(1000),
-  deadline: z.string().min(1, "polls.create.errors.deadlineRequired"),
+  deadline: z.string().min(1, "surveys.create.errors.deadlineRequired"),
 });
 
 type FormValues = z.infer<typeof schema>;
 
 const stepKeys = ["details", "targeting", "budget", "review"] as const;
 
-export default function CreatePollPage() {
+export default function CreateSurveyPage() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const [step, setStep] = React.useState(0);
   const { data: categories } = useCategories();
-  const createPollMutation = useCreatePoll();
+  const createSurveyMutation = useCreateSurvey();
 
   const {
     register,
@@ -65,7 +65,7 @@ export default function CreatePollPage() {
       title: "",
       description: "",
       categoryId: "",
-      pollUrl: "",
+      surveyUrl: "",
       completionCode: "",
       estimatedTimeMinutes: 5,
       tags: "",
@@ -80,7 +80,7 @@ export default function CreatePollPage() {
   const publishingCost = (values.targetResponses || 0) * (values.reward || 0);
 
   const stepFields: Record<number, (keyof FormValues)[]> = {
-    0: ["title", "description", "categoryId", "pollUrl", "estimatedTimeMinutes"],
+    0: ["title", "description", "categoryId", "surveyUrl", "estimatedTimeMinutes"],
     1: [],
     2: ["targetResponses", "reward", "deadline"],
     3: [],
@@ -93,12 +93,12 @@ export default function CreatePollPage() {
 
   function submit(publish: boolean) {
     handleSubmit((formValues) => {
-      createPollMutation.mutate(
+      createSurveyMutation.mutate(
         {
           title: formValues.title,
           description: formValues.description,
           categoryId: formValues.categoryId,
-          pollUrl: formValues.pollUrl,
+          surveyUrl: formValues.surveyUrl,
           completionCode: formValues.completionCode || undefined,
           estimatedTimeMinutes: formValues.estimatedTimeMinutes,
           tags: formValues.tags
@@ -111,9 +111,9 @@ export default function CreatePollPage() {
           publish,
         },
         {
-          onSuccess: (poll) => {
-            toast.success(publish ? t("polls.create.published") : t("polls.create.draftSaved"));
-            router.push(`/polls/${poll.id}`);
+          onSuccess: (survey) => {
+            toast.success(publish ? t("surveys.create.published") : t("surveys.create.draftSaved"));
+            router.push(`/surveys/${survey.id}`);
           },
           onError: (error) => toast.error(getApiErrorMessage(error)),
         }
@@ -125,7 +125,7 @@ export default function CreatePollPage() {
     <AppShell>
       {(user) => (
         <div className="mx-auto max-w-2xl space-y-6">
-          <h1 className="text-2xl font-semibold">{t("polls.create.title")}</h1>
+          <h1 className="text-2xl font-semibold">{t("surveys.create.title")}</h1>
 
           <div className="flex items-center gap-2">
             {stepKeys.map((key, i) => (
@@ -143,7 +143,7 @@ export default function CreatePollPage() {
                   {i < step ? <Check className="size-4" /> : i + 1}
                 </div>
                 <span className={cn("text-sm", i === step ? "font-medium" : "text-muted-foreground")}>
-                  {t(`polls.create.steps.${key}`)}
+                  {t(`surveys.create.steps.${key}`)}
                 </span>
                 {i < stepKeys.length - 1 && <div className="h-px flex-1 bg-border" />}
               </div>
@@ -162,14 +162,14 @@ export default function CreatePollPage() {
                 {step === 0 && (
                   <>
                     <div className="space-y-1.5">
-                      <Label htmlFor="title">{t("polls.create.fields.title")}</Label>
+                      <Label htmlFor="title">{t("surveys.create.fields.title")}</Label>
                       <Input id="title" {...register("title")} />
                       {errors.title && (
                         <p className="text-xs text-destructive">{t(errors.title.message as string)}</p>
                       )}
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="description">{t("polls.create.fields.description")}</Label>
+                      <Label htmlFor="description">{t("surveys.create.fields.description")}</Label>
                       <textarea
                         id="description"
                         rows={4}
@@ -184,10 +184,10 @@ export default function CreatePollPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <Label>{t("polls.create.fields.category")}</Label>
+                        <Label>{t("surveys.create.fields.category")}</Label>
                         <Select onValueChange={(v) => setValue("categoryId", v)}>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder={t("polls.create.fields.categoryPlaceholder")} />
+                            <SelectValue placeholder={t("surveys.create.fields.categoryPlaceholder")} />
                           </SelectTrigger>
                           <SelectContent>
                             {categories?.map((c) => (
@@ -205,7 +205,7 @@ export default function CreatePollPage() {
                       </div>
                       <div className="space-y-1.5">
                         <Label htmlFor="estimatedTimeMinutes">
-                          {t("polls.create.fields.estimatedTime")}
+                          {t("surveys.create.fields.estimatedTime")}
                         </Label>
                         <Input
                           id="estimatedTimeMinutes"
@@ -215,26 +215,26 @@ export default function CreatePollPage() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="pollUrl">{t("polls.create.fields.pollUrl")}</Label>
-                      <Input id="pollUrl" placeholder="https://" {...register("pollUrl")} />
-                      {errors.pollUrl && (
+                      <Label htmlFor="surveyUrl">{t("surveys.create.fields.surveyUrl")}</Label>
+                      <Input id="surveyUrl" placeholder="https://" {...register("surveyUrl")} />
+                      {errors.surveyUrl && (
                         <p className="text-xs text-destructive">
-                          {t(errors.pollUrl.message as string)}
+                          {t(errors.surveyUrl.message as string)}
                         </p>
                       )}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label htmlFor="completionCode">
-                          {t("polls.create.fields.completionCode")}
+                          {t("surveys.create.fields.completionCode")}
                         </Label>
                         <Input id="completionCode" {...register("completionCode")} />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="tags">{t("polls.create.fields.tags")}</Label>
+                        <Label htmlFor="tags">{t("surveys.create.fields.tags")}</Label>
                         <Input
                           id="tags"
-                          placeholder={t("polls.create.fields.tagsPlaceholder")}
+                          placeholder={t("surveys.create.fields.tagsPlaceholder")}
                           {...register("tags")}
                         />
                       </div>
@@ -245,10 +245,10 @@ export default function CreatePollPage() {
                 {step === 1 && (
                   <>
                     <p className="text-sm text-muted-foreground">
-                      {t("polls.create.fields.targetingHint")}
+                      {t("surveys.create.fields.targetingHint")}
                     </p>
                     <div className="space-y-1.5">
-                      <Label htmlFor="targetCountry">{t("polls.create.fields.targetCountry")}</Label>
+                      <Label htmlFor="targetCountry">{t("surveys.create.fields.targetCountry")}</Label>
                       <Input id="targetCountry" {...register("targetCountry")} />
                     </div>
                   </>
@@ -259,7 +259,7 @@ export default function CreatePollPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label htmlFor="targetResponses">
-                          {t("polls.create.fields.targetResponses")}
+                          {t("surveys.create.fields.targetResponses")}
                         </Label>
                         <Input
                           id="targetResponses"
@@ -268,7 +268,7 @@ export default function CreatePollPage() {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <Label htmlFor="reward">{t("polls.create.fields.reward")}</Label>
+                        <Label htmlFor="reward">{t("surveys.create.fields.reward")}</Label>
                         <Input
                           id="reward"
                           type="number"
@@ -277,7 +277,7 @@ export default function CreatePollPage() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="deadline">{t("polls.create.fields.deadline")}</Label>
+                      <Label htmlFor="deadline">{t("surveys.create.fields.deadline")}</Label>
                       <Input id="deadline" type="date" {...register("deadline")} />
                       {errors.deadline && (
                         <p className="text-xs text-destructive">
@@ -289,22 +289,22 @@ export default function CreatePollPage() {
                     <div className="space-y-2 rounded-2xl bg-muted/60 p-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
-                          {t("polls.create.publishingCost")}
+                          {t("surveys.create.publishingCost")}
                         </span>
                         <span className="flex items-center gap-1 font-semibold">
                           <Sparkles className="size-4 text-primary" /> {publishingCost}{" "}
-                          {t("polls.card.pts")}
+                          {t("surveys.card.pts")}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">{t("polls.create.yourBalance")}</span>
+                        <span className="text-muted-foreground">{t("surveys.create.yourBalance")}</span>
                         <span className="font-medium">
-                          {user.points} {t("polls.card.pts")}
+                          {user.points} {t("surveys.card.pts")}
                         </span>
                       </div>
                       {publishingCost > user.points && (
                         <p className="text-xs text-destructive">
-                          {t("polls.create.insufficientFunds")}
+                          {t("surveys.create.insufficientFunds")}
                         </p>
                       )}
                     </div>
@@ -314,29 +314,29 @@ export default function CreatePollPage() {
                 {step === 3 && (
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t("polls.create.review.title")}</span>
+                      <span className="text-muted-foreground">{t("surveys.create.review.title")}</span>
                       <span className="font-medium">{values.title}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        {t("polls.create.review.responsesReward")}
+                        {t("surveys.create.review.responsesReward")}
                       </span>
                       <span className="font-medium">
-                        {values.targetResponses} × {values.reward} {t("polls.card.pts")}
+                        {values.targetResponses} × {values.reward} {t("surveys.card.pts")}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        {t("polls.create.review.deadline")}
+                        {t("surveys.create.review.deadline")}
                       </span>
                       <span className="font-medium">{values.deadline}</span>
                     </div>
                     <div className="flex justify-between border-t border-border pt-3">
                       <span className="text-muted-foreground">
-                        {t("polls.create.review.totalCost")}
+                        {t("surveys.create.review.totalCost")}
                       </span>
                       <span className="font-semibold text-primary">
-                        {publishingCost} {t("polls.card.pts")}
+                        {publishingCost} {t("surveys.card.pts")}
                       </span>
                     </div>
                   </div>
@@ -364,16 +364,16 @@ export default function CreatePollPage() {
                 <Button
                   variant="outline"
                   onClick={() => submit(false)}
-                  disabled={createPollMutation.isPending}
+                  disabled={createSurveyMutation.isPending}
                 >
-                  {t("polls.create.saveDraft")}
+                  {t("surveys.create.saveDraft")}
                 </Button>
                 <Button
                   onClick={() => submit(true)}
-                  disabled={createPollMutation.isPending || publishingCost > user.points}
+                  disabled={createSurveyMutation.isPending || publishingCost > user.points}
                 >
-                  {createPollMutation.isPending && <Loader2 className="me-2 size-4 animate-spin" />}
-                  {t("polls.create.publishNow")}
+                  {createSurveyMutation.isPending && <Loader2 className="me-2 size-4 animate-spin" />}
+                  {t("surveys.create.publishNow")}
                 </Button>
               </div>
             )}

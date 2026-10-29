@@ -12,7 +12,7 @@ import { errorHandler } from "@/middlewares/errorHandler";
 import { sendSuccess } from "@/shared/response";
 import authRoutes from "@/modules/auth/auth.routes";
 import usersRoutes from "@/modules/users/users.routes";
-import pollsRoutes from "@/modules/polls/polls.routes";
+import surveysRoutes from "@/modules/surveys/surveys.routes";
 import categoriesRoutes from "@/modules/categories/categories.routes";
 import pointsRoutes from "@/modules/points/points.routes";
 import dashboardRoutes from "@/modules/dashboard/dashboard.routes";
@@ -46,7 +46,7 @@ export function createApp() {
 
   app.use("/api/auth", authRoutes);
   app.use("/api/users", usersRoutes);
-  app.use("/api/polls", pollsRoutes);
+  app.use("/api/surveys", surveysRoutes);
   app.use("/api/categories", categoriesRoutes);
   app.use("/api/points", pointsRoutes);
   app.use("/api/dashboard", dashboardRoutes);

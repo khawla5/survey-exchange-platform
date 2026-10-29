@@ -26,7 +26,7 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().optional().default(587),
   SMTP_USER: z.string().optional().default(""),
   SMTP_PASSWORD: z.string().optional().default(""),
-  SMTP_FROM: z.string().default("PollXchange <no-reply@pollxchange.com>"),
+  SMTP_FROM: z.string().default("SurveyXchange <no-reply@pollxchange.com>"),
 
   AWS_REGION: z.string().optional().default(""),
   AWS_ACCESS_KEY_ID: z.string().optional().default(""),

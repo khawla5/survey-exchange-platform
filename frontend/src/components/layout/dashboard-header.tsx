@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/dashboard", key: "nav.dashboard" },
-  { href: "/polls", key: "nav.browse" },
-  { href: "/my-polls", key: "nav.myPolls" },
+  { href: "/surveys", key: "nav.browse" },
+  { href: "/my-surveys", key: "nav.mySurveys" },
   { href: "/points", key: "nav.points" },
   { href: "/leaderboard", key: "nav.leaderboard" },
   { href: "/achievements", key: "nav.achievements" },
@@ -70,7 +70,7 @@ export function DashboardHeader({ user }: { user: AuthUser }) {
 
         <div className="flex shrink-0 items-center gap-1.5">
           <Button asChild size="sm" className="hidden gap-1.5 md:flex">
-            <Link href="/polls/create">
+            <Link href="/surveys/create">
               <PlusCircle className="size-4" />
               <span className="hidden lg:inline">{t("nav.create")}</span>
             </Link>

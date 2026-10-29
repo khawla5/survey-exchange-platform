@@ -1,23 +1,23 @@
-import { Prisma, PollStatus } from "@prisma/client";
+import { Prisma, SurveyStatus } from "@prisma/client";
 import { prisma } from "@/database/prisma";
-import { ListPollsQuery } from "@/modules/polls/polls.validation";
+import { ListSurveysQuery } from "@/modules/surveys/surveys.validation";
 
-const publicPollInclude = {
+const publicSurveyInclude = {
   category: true,
   creator: { select: { id: true, firstName: true, lastName: true, avatar: true } },
   institution: { select: { id: true, name: true, verified: true, logo: true } },
   tags: { include: { tag: true } },
   _count: { select: { bookmarks: true, reports: true } },
-} satisfies Prisma.PollInclude;
+} satisfies Prisma.SurveyInclude;
 
-export const pollsRepository = {
-  async createPoll(
-    data: Omit<Prisma.PollUncheckedCreateInput, "tags"> & { tagNames: string[] }
+export const surveysRepository = {
+  async createSurvey(
+    data: Omit<Prisma.SurveyUncheckedCreateInput, "tags"> & { tagNames: string[] }
   ) {
-    const { tagNames, ...pollData } = data;
-    return prisma.poll.create({
+    const { tagNames, ...surveyData } = data;
+    return prisma.survey.create({
       data: {
-        ...pollData,
+        ...surveyData,
         tags: tagNames.length
           ? {
               create: tagNames.map((name) => ({
@@ -31,34 +31,34 @@ export const pollsRepository = {
             }
           : undefined,
       },
-      include: publicPollInclude,
+      include: publicSurveyInclude,
     });
   },
 
   findById(id: string) {
-    return prisma.poll.findFirst({
+    return prisma.survey.findFirst({
       where: { id, deletedAt: null },
-      include: publicPollInclude,
+      include: publicSurveyInclude,
     });
   },
 
-  updatePoll(id: string, data: Prisma.PollUpdateInput) {
-    return prisma.poll.update({ where: { id }, data, include: publicPollInclude });
+  updateSurvey(id: string, data: Prisma.SurveyUpdateInput) {
+    return prisma.survey.update({ where: { id }, data, include: publicSurveyInclude });
   },
 
   softDelete(id: string) {
-    return prisma.poll.update({
+    return prisma.survey.update({
       where: { id },
       data: { deletedAt: new Date(), status: "DELETED" },
     });
   },
 
-  async list(query: ListPollsQuery, viewerId: string | undefined) {
-    const where: Prisma.PollWhereInput = { deletedAt: null };
+  async list(query: ListSurveysQuery, viewerId: string | undefined) {
+    const where: Prisma.SurveyWhereInput = { deletedAt: null };
 
     if (query.mine && viewerId) {
       where.creatorId = viewerId;
-      if (query.status) where.status = query.status as PollStatus;
+      if (query.status) where.status = query.status as SurveyStatus;
     } else if (query.bookmarked && viewerId) {
       where.bookmarks = { some: { userId: viewerId } };
     } else {
@@ -77,7 +77,7 @@ export const pollsRepository = {
     if (query.language) where.targetLanguage = query.language;
     if (query.academicLevel) where.targetAcademicLevel = query.academicLevel;
 
-    const orderBy: Prisma.PollOrderByWithRelationInput =
+    const orderBy: Prisma.SurveyOrderByWithRelationInput =
       query.sort === "reward"
         ? { reward: "desc" }
         : query.sort === "deadline"
@@ -89,55 +89,55 @@ export const pollsRepository = {
               : { createdAt: "desc" };
 
     const [items, total] = await Promise.all([
-      prisma.poll.findMany({
+      prisma.survey.findMany({
         where,
-        include: publicPollInclude,
+        include: publicSurveyInclude,
         orderBy,
         skip: (query.page - 1) * query.limit,
         take: query.limit,
       }),
-      prisma.poll.count({ where }),
+      prisma.survey.count({ where }),
     ]);
 
     return { items, total };
   },
 
   incrementViews(id: string) {
-    return prisma.poll.update({ where: { id }, data: { views: { increment: 1 } } });
+    return prisma.survey.update({ where: { id }, data: { views: { increment: 1 } } });
   },
 
-  findResponse(pollId: string, userId: string) {
-    return prisma.pollResponse.findUnique({
-      where: { pollId_userId: { pollId, userId } },
+  findResponse(surveyId: string, userId: string) {
+    return prisma.surveyResponse.findUnique({
+      where: { surveyId_userId: { surveyId, userId } },
     });
   },
 
-  findBookmark(pollId: string, userId: string) {
-    return prisma.pollBookmark.findUnique({
-      where: { pollId_userId: { pollId, userId } },
+  findBookmark(surveyId: string, userId: string) {
+    return prisma.surveyBookmark.findUnique({
+      where: { surveyId_userId: { surveyId, userId } },
     });
   },
 
-  createBookmark(pollId: string, userId: string) {
-    return prisma.pollBookmark.create({ data: { pollId, userId } });
+  createBookmark(surveyId: string, userId: string) {
+    return prisma.surveyBookmark.create({ data: { surveyId, userId } });
   },
 
-  deleteBookmark(pollId: string, userId: string) {
-    return prisma.pollBookmark.delete({
-      where: { pollId_userId: { pollId, userId } },
+  deleteBookmark(surveyId: string, userId: string) {
+    return prisma.surveyBookmark.delete({
+      where: { surveyId_userId: { surveyId, userId } },
     });
   },
 
-  createReport(pollId: string, reporterId: string, reason: string, description?: string) {
-    return prisma.pollReport.create({
+  createReport(surveyId: string, reporterId: string, reason: string, description?: string) {
+    return prisma.surveyReport.create({
       data: {
-        pollId,
+        surveyId,
         reporterId,
-        reason: reason as Prisma.PollReportCreateInput["reason"],
+        reason: reason as Prisma.SurveyReportCreateInput["reason"],
         description,
       },
     });
   },
 };
 
-export type PublicPoll = Prisma.PollGetPayload<{ include: typeof publicPollInclude }>;
+export type PublicSurvey = Prisma.SurveyGetPayload<{ include: typeof publicSurveyInclude }>;

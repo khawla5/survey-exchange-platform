@@ -106,7 +106,7 @@ async function sendVerificationCode(user: User) {
   });
   await sendMail({
     to: user.email,
-    subject: "Verify your PollXchange account",
+    subject: "Verify your SurveyXchange account",
     html: verificationEmailTemplate(user.firstName, code),
   });
 }
@@ -166,7 +166,7 @@ export const authService = {
     await authRepository.markEmailVerified(user.id, env.STARTER_POINTS);
     await sendMail({
       to: user.email,
-      subject: "Welcome to PollXchange",
+      subject: "Welcome to SurveyXchange",
       html: welcomeEmailTemplate(user.firstName),
     });
 
@@ -261,7 +261,7 @@ export const authService = {
     const resetUrl = `${env.WEB_URL}/reset-password?token=${rawToken}`;
     await sendMail({
       to: user.email,
-      subject: "Reset your PollXchange password",
+      subject: "Reset your SurveyXchange password",
       html: passwordResetEmailTemplate(user.firstName, resetUrl),
     });
 

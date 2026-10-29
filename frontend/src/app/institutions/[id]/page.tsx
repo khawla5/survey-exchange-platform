@@ -67,13 +67,13 @@ export default function InstitutionDetailsPage() {
               <StatBlock icon={Users} label={t("institutions.members")} value={institution.stats.memberCount} />
               <StatBlock
                 icon={FileCheck2}
-                label={t("institutions.livePolls")}
-                value={institution.stats.livePollCount}
+                label={t("institutions.liveSurveys")}
+                value={institution.stats.liveSurveyCount}
               />
               <StatBlock
                 icon={CheckCircle2}
-                label={t("institutions.completedPolls")}
-                value={institution.stats.completedPollCount}
+                label={t("institutions.completedSurveys")}
+                value={institution.stats.completedSurveyCount}
               />
               <StatBlock
                 icon={Sparkles}
@@ -126,7 +126,7 @@ export default function InstitutionDetailsPage() {
                           <p className="text-xs text-muted-foreground">{member.role}</p>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          {member.points} {t("polls.card.pts")}
+                          {member.points} {t("surveys.card.pts")}
                         </span>
                       </div>
                     );

@@ -45,7 +45,7 @@ function AchievementCard({ achievement, index }: { achievement: Achievement; ind
             <p className="text-xs text-muted-foreground">{achievement.description}</p>
           </div>
           <div className="flex items-center gap-1 text-xs font-medium text-primary">
-            <Sparkles className="size-3.5" /> +{achievement.pointsReward} {t("polls.card.pts")}
+            <Sparkles className="size-3.5" /> +{achievement.pointsReward} {t("surveys.card.pts")}
           </div>
         </CardContent>
       </Card>

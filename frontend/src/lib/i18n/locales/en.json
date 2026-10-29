@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "PollXchange",
+    "appName": "SurveyXchange",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -32,7 +32,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "browse": "Browse",
-    "myPolls": "My Polls",
+    "mySurveys": "My Surveys",
     "points": "Points",
     "leaderboard": "Leaderboard",
     "achievements": "Achievements",
@@ -41,7 +41,7 @@
   "auth": {
     "register": {
       "title": "Create your account",
-      "subtitle": "Join students, researchers and professors exchanging poll responses.",
+      "subtitle": "Join students, researchers and professors exchanging survey responses.",
       "firstName": "First name",
       "lastName": "Last name",
       "email": "Email address",
@@ -60,7 +60,7 @@
     },
     "login": {
       "title": "Welcome back",
-      "subtitle": "Sign in to continue exchanging poll responses.",
+      "subtitle": "Sign in to continue exchanging survey responses.",
       "email": "Email address",
       "password": "Password",
       "rememberMe": "Remember me",
@@ -96,8 +96,8 @@
       "success": "Password reset successfully. You can now sign in.",
       "invalidToken": "This reset link is invalid or has expired."
     },
-    "heroTitle": "Answer polls. Earn points. Publish your own.",
-    "heroSubtitle": "A point-based exchange for students, researchers, professors and universities to trade real poll responses — no cash, no cold outreach.",
+    "heroTitle": "Answer surveys. Earn points. Publish your own.",
+    "heroSubtitle": "A point-based exchange for students, researchers, professors and universities to trade real survey responses — no cash, no cold outreach.",
     "validation": {
       "required": "This field is required",
       "email": "Enter a valid email address",
@@ -115,11 +115,11 @@
     "createAccount": "Create account",
     "dashboard": "Dashboard",
     "getStarted": "Get started",
-    "heroTitle": "Answer polls. Earn points. Publish your own.",
-    "heroSubtitle": "The poll exchange platform for students, researchers, professors and universities.",
+    "heroTitle": "Answer surveys. Earn points. Publish your own.",
+    "heroSubtitle": "The survey exchange platform for students, researchers, professors and universities.",
     "features": {
       "exchangeTitle": "Exchange, don't beg",
-      "exchangeBody": "Answer polls to earn points, then spend them to get real responses to your own.",
+      "exchangeBody": "Answer surveys to earn points, then spend them to get real responses to your own.",
       "academiaTitle": "Built for academia",
       "academiaBody": "Students, researchers, professors and universities — matched by discipline and role.",
       "gamifiedTitle": "Gamified contribution",
@@ -130,27 +130,27 @@
     "greeting": "Welcome back, {{name}}",
     "pointsBalance": "Points balance",
     "reputation": "Reputation",
-    "completedPolls": "Completed polls",
+    "completedSurveys": "Completed surveys",
     "bookmarks": "Bookmarks",
     "recommended": "Recommended for you",
-    "noRecommendations": "No recommendations yet — be the first to publish a poll!",
-    "createPollCta": "Create a poll",
+    "noRecommendations": "No recommendations yet — be the first to publish a survey!",
+    "createSurveyCta": "Create a survey",
     "onboarding": {
       "title": "You're verified!",
-      "subtitle": "Your account is ready. The full poll exchange experience is coming next."
+      "subtitle": "Your account is ready. The full survey exchange experience is coming next."
     }
   },
-  "polls": {
+  "surveys": {
     "browse": {
-      "title": "Browse polls",
-      "searchPlaceholder": "Search polls...",
+      "title": "Browse surveys",
+      "searchPlaceholder": "Search surveys...",
       "allCategories": "All categories",
       "sortNewest": "Newest",
       "sortReward": "Highest reward",
       "sortDeadline": "Deadline soon",
       "sortTime": "Least time",
       "sortPopular": "Most popular",
-      "noResultsTitle": "No polls found",
+      "noResultsTitle": "No surveys found",
       "noResultsBody": "Try adjusting your search or filters."
     },
     "card": {
@@ -162,19 +162,19 @@
       "bookmark": "Bookmark"
     },
     "details": {
-      "openPoll": "Open poll",
+      "openSurvey": "Open survey",
       "alreadyCompleted": "Already completed",
       "iCompletedIt": "I've completed it",
       "confirmCompletion": "Confirm completion",
-      "confirmCompletionBody": "Confirm you completed this poll to earn {{points}} points.",
+      "confirmCompletionBody": "Confirm you completed this survey to earn {{points}} points.",
       "completionCode": "Completion code",
-      "completionCodePlaceholder": "Shown at the end of the poll",
+      "completionCodePlaceholder": "Shown at the end of the survey",
       "confirmEarnPoints": "Confirm & earn points",
-      "reportPoll": "Report poll",
-      "reportThisPoll": "Report this poll",
+      "reportSurvey": "Report survey",
+      "reportThisSurvey": "Report this survey",
       "additionalDetails": "Additional details (optional)",
       "submitReport": "Submit report",
-      "managePoll": "Manage this poll",
+      "manageSurvey": "Manage this survey",
       "back": "Back",
       "completedToast": "Completed! You earned {{points}} points 🎉",
       "reportSubmittedToast": "Report submitted. Thanks for helping keep the platform trustworthy.",
@@ -193,7 +193,7 @@
       }
     },
     "create": {
-      "title": "Create a poll",
+      "title": "Create a survey",
       "steps": {
         "details": "Details",
         "targeting": "Targeting",
@@ -201,16 +201,16 @@
         "review": "Review"
       },
       "fields": {
-        "title": "Poll title",
+        "title": "Survey title",
         "description": "Description",
         "category": "Category",
         "categoryPlaceholder": "Select",
         "estimatedTime": "Est. time (min)",
-        "pollUrl": "Poll link (external form)",
+        "surveyUrl": "Survey link (external form)",
         "completionCode": "Completion code (optional)",
         "tags": "Tags (comma separated)",
         "tagsPlaceholder": "ux, research",
-        "targetingHint": "Optionally narrow who this poll is recommended to. Leave blank to reach everyone.",
+        "targetingHint": "Optionally narrow who this survey is recommended to. Leave blank to reach everyone.",
         "targetCountry": "Target country",
         "targetResponses": "Target responses",
         "reward": "Reward per response (pts)",
@@ -218,7 +218,7 @@
       },
       "publishingCost": "Publishing cost",
       "yourBalance": "Your balance",
-      "insufficientFunds": "You don't have enough points to post this poll yet — Answer other polls to earn points.",
+      "insufficientFunds": "You don't have enough points to post this survey yet — Answer other surveys to earn points.",
       "review": {
         "title": "Title",
         "responsesReward": "Responses × Reward",
@@ -228,18 +228,18 @@
       "saveDraft": "Save draft",
       "publishNow": "Publish now",
       "draftSaved": "Draft saved",
-      "published": "Poll published!",
+      "published": "Survey published!",
       "errors": {
         "titleMin": "Title must be at least 3 characters",
         "descriptionMin": "Description must be at least 10 characters",
         "categoryRequired": "Choose a category",
-        "urlInvalid": "Enter a valid poll link",
+        "urlInvalid": "Enter a valid survey link",
         "deadlineRequired": "Choose a deadline"
       }
     },
     "mine": {
-      "title": "My polls",
-      "createPoll": "Create poll",
+      "title": "My surveys",
+      "createSurvey": "Create survey",
       "tabs": {
         "all": "All",
         "draft": "Draft",
@@ -247,8 +247,8 @@
         "completed": "Completed",
         "archived": "Archived"
       },
-      "emptyTitle": "No polls yet",
-      "emptyBody": "Publish your first poll to start collecting responses."
+      "emptyTitle": "No surveys yet",
+      "emptyBody": "Publish your first survey to start collecting responses."
     }
   },
   "points": {
@@ -281,8 +281,8 @@
   "institutions": {
     "verified": "Verified",
     "members": "Members",
-    "livePolls": "Live polls",
-    "completedPolls": "Completed polls",
+    "liveSurveys": "Live surveys",
+    "completedSurveys": "Completed surveys",
     "totalPoints": "Total points",
     "topContributors": "Top contributors",
     "allMembers": "All members ({{count}})"

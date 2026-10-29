@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "PollXchange",
+    "appName": "SurveyXchange",
     "loading": "جارِ التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
@@ -32,7 +32,7 @@
   "nav": {
     "dashboard": "لوحة التحكم",
     "browse": "تصفح",
-    "myPolls": "استبياناتي",
+    "mySurveys": "استبياناتي",
     "points": "النقاط",
     "leaderboard": "المتصدرون",
     "achievements": "الإنجازات",
@@ -130,17 +130,17 @@
     "greeting": "مرحبًا بعودتك، {{name}}",
     "pointsBalance": "رصيد النقاط",
     "reputation": "السمعة",
-    "completedPolls": "الاستبيانات المكتملة",
+    "completedSurveys": "الاستبيانات المكتملة",
     "bookmarks": "المحفوظات",
     "recommended": "موصى به لك",
     "noRecommendations": "لا توجد توصيات بعد — كن أول من ينشر استبيانًا!",
-    "createPollCta": "أنشئ استبيانًا",
+    "createSurveyCta": "أنشئ استبيانًا",
     "onboarding": {
       "title": "تم التحقق من حسابك!",
       "subtitle": "حسابك جاهز. تجربة تبادل الاستبيانات الكاملة قادمة قريبًا."
     }
   },
-  "polls": {
+  "surveys": {
     "browse": {
       "title": "تصفح الاستبيانات",
       "searchPlaceholder": "ابحث عن استبيانات...",
@@ -162,7 +162,7 @@
       "bookmark": "حفظ"
     },
     "details": {
-      "openPoll": "افتح الاستبيان",
+      "openSurvey": "افتح الاستبيان",
       "alreadyCompleted": "تم الإكمال مسبقًا",
       "iCompletedIt": "أكملت الاستبيان",
       "confirmCompletion": "تأكيد الإكمال",
@@ -170,11 +170,11 @@
       "completionCode": "كود الإكمال",
       "completionCodePlaceholder": "يظهر في نهاية الاستبيان",
       "confirmEarnPoints": "تأكيد واكسب النقاط",
-      "reportPoll": "الإبلاغ عن الاستبيان",
-      "reportThisPoll": "الإبلاغ عن هذا الاستبيان",
+      "reportSurvey": "الإبلاغ عن الاستبيان",
+      "reportThisSurvey": "الإبلاغ عن هذا الاستبيان",
       "additionalDetails": "تفاصيل إضافية (اختياري)",
       "submitReport": "إرسال البلاغ",
-      "managePoll": "إدارة هذا الاستبيان",
+      "manageSurvey": "إدارة هذا الاستبيان",
       "back": "رجوع",
       "completedToast": "أحسنت! ربحت {{points}} نقطة 🎉",
       "reportSubmittedToast": "تم إرسال البلاغ. شكرًا لمساعدتك بالحفاظ على موثوقية المنصة.",
@@ -206,7 +206,7 @@
         "category": "الفئة",
         "categoryPlaceholder": "اختر",
         "estimatedTime": "الوقت المتوقع (دقيقة)",
-        "pollUrl": "رابط الاستبيان (نموذج خارجي)",
+        "surveyUrl": "رابط الاستبيان (نموذج خارجي)",
         "completionCode": "كود الإكمال (اختياري)",
         "tags": "الوسوم (افصل بينها بفاصلة)",
         "tagsPlaceholder": "تجربة المستخدم، بحث",
@@ -239,7 +239,7 @@
     },
     "mine": {
       "title": "استبياناتي",
-      "createPoll": "إنشاء استبيان",
+      "createSurvey": "إنشاء استبيان",
       "tabs": {
         "all": "الكل",
         "draft": "مسودة",
@@ -281,8 +281,8 @@
   "institutions": {
     "verified": "موثّقة",
     "members": "الأعضاء",
-    "livePolls": "الاستبيانات المباشرة",
-    "completedPolls": "الاستبيانات المكتملة",
+    "liveSurveys": "الاستبيانات المباشرة",
+    "completedSurveys": "الاستبيانات المكتملة",
     "totalPoints": "إجمالي النقاط",
     "topContributors": "أبرز المساهمين",
     "allMembers": "كل الأعضاء ({{count}})"

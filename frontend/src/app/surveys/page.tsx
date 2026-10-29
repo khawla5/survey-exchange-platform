@@ -4,7 +4,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
-import { PollCard } from "@/components/polls/poll-card";
+import { SurveyCard } from "@/components/surveys/survey-card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -15,34 +15,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePolls } from "@/lib/polls/use-polls";
+import { useSurveys } from "@/lib/surveys/use-surveys";
 import { useCategories } from "@/lib/categories/use-categories";
 import { localizedCategoryName } from "@/lib/categories/localized-name";
-import { PollListParams } from "@/lib/polls/api";
+import { SurveyListParams } from "@/lib/surveys/api";
 
-export default function BrowsePollsPage() {
+export default function BrowseSurveysPage() {
   const { t, i18n } = useTranslation();
   const [search, setSearch] = React.useState("");
   const [category, setCategory] = React.useState<string | undefined>(undefined);
-  const [sort, setSort] = React.useState<PollListParams["sort"]>("newest");
+  const [sort, setSort] = React.useState<SurveyListParams["sort"]>("newest");
   const [page, setPage] = React.useState(1);
 
   const { data: categories } = useCategories();
-  const { data, isLoading } = usePolls({ page, limit: 12, search, category, sort });
+  const { data, isLoading } = useSurveys({ page, limit: 12, search, category, sort });
 
   return (
     <AppShell>
       {() => (
         <>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-2xl font-semibold">{t("polls.browse.title")}</h1>
+            <h1 className="text-2xl font-semibold">{t("surveys.browse.title")}</h1>
           </div>
 
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row">
             <div className="relative flex-1">
               <Search className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder={t("polls.browse.searchPlaceholder")}
+                placeholder={t("surveys.browse.searchPlaceholder")}
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -59,10 +59,10 @@ export default function BrowsePollsPage() {
               }}
             >
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder={t("polls.browse.allCategories")} />
+                <SelectValue placeholder={t("surveys.browse.allCategories")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("polls.browse.allCategories")}</SelectItem>
+                <SelectItem value="all">{t("surveys.browse.allCategories")}</SelectItem>
                 {categories?.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {localizedCategoryName(c, i18n.language)}
@@ -70,17 +70,17 @@ export default function BrowsePollsPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={sort} onValueChange={(v) => setSort(v as PollListParams["sort"])}>
+            <Select value={sort} onValueChange={(v) => setSort(v as SurveyListParams["sort"])}>
               <SelectTrigger className="w-full sm:w-44">
                 <SlidersHorizontal className="size-4" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">{t("polls.browse.sortNewest")}</SelectItem>
-                <SelectItem value="reward">{t("polls.browse.sortReward")}</SelectItem>
-                <SelectItem value="deadline">{t("polls.browse.sortDeadline")}</SelectItem>
-                <SelectItem value="time">{t("polls.browse.sortTime")}</SelectItem>
-                <SelectItem value="popular">{t("polls.browse.sortPopular")}</SelectItem>
+                <SelectItem value="newest">{t("surveys.browse.sortNewest")}</SelectItem>
+                <SelectItem value="reward">{t("surveys.browse.sortReward")}</SelectItem>
+                <SelectItem value="deadline">{t("surveys.browse.sortDeadline")}</SelectItem>
+                <SelectItem value="time">{t("surveys.browse.sortTime")}</SelectItem>
+                <SelectItem value="popular">{t("surveys.browse.sortPopular")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -94,8 +94,8 @@ export default function BrowsePollsPage() {
           ) : data && data.data.length > 0 ? (
             <>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {data.data.map((poll) => (
-                  <PollCard key={poll.id} poll={poll} />
+                {data.data.map((survey) => (
+                  <SurveyCard key={survey.id} survey={survey} />
                 ))}
               </div>
               {data.pagination && data.pagination.totalPages > 1 && (
@@ -124,8 +124,8 @@ export default function BrowsePollsPage() {
             </>
           ) : (
             <div className="rounded-2xl border border-dashed border-border p-12 text-center">
-              <p className="font-medium">{t("polls.browse.noResultsTitle")}</p>
-              <p className="text-sm text-muted-foreground">{t("polls.browse.noResultsBody")}</p>
+              <p className="font-medium">{t("surveys.browse.noResultsTitle")}</p>
+              <p className="text-sm text-muted-foreground">{t("surveys.browse.noResultsBody")}</p>
             </div>
           )}
         </>

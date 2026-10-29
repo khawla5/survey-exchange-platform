@@ -8,7 +8,7 @@ import { initSocketServer } from "@/realtime/socket";
 const app = createApp();
 
 const server = app.listen(env.PORT, () => {
-  logger.info(`PollXchange API listening on http://localhost:${env.PORT}`);
+  logger.info(`SurveyXchange API listening on http://localhost:${env.PORT}`);
 });
 
 initSocketServer(server);

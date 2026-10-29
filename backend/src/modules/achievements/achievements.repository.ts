@@ -22,12 +22,12 @@ export const achievementsRepository = {
     return prisma.userAchievement.create({ data: { userId, achievementId } });
   },
 
-  countCompletedPolls(userId: string) {
-    return prisma.pollResponse.count({ where: { userId } });
+  countCompletedSurveys(userId: string) {
+    return prisma.surveyResponse.count({ where: { userId } });
   },
 
-  countPublishedPolls(userId: string) {
-    return prisma.poll.count({
+  countPublishedSurveys(userId: string) {
+    return prisma.survey.count({
       where: { creatorId: userId, deletedAt: null, status: { in: ["LIVE", "COMPLETED"] } },
     });
   },

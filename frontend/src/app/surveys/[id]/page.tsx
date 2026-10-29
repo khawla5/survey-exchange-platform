@@ -41,21 +41,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePoll, useCompletePoll, useToggleBookmark, useReportPoll } from "@/lib/polls/use-polls";
+import { useSurvey, useCompleteSurvey, useToggleBookmark, useReportSurvey } from "@/lib/surveys/use-surveys";
 import { getApiErrorMessage } from "@/lib/api/client";
 import { isPast } from "@/lib/date-utils";
 import { localizedCategoryName } from "@/lib/categories/localized-name";
 
 const reportReasons = ["SPAM", "BROKEN_LINK", "FRAUD", "OFFENSIVE", "DUPLICATE", "OTHER"] as const;
 
-export default function PollDetailsPage() {
+export default function SurveyDetailsPage() {
   const { t, i18n } = useTranslation();
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { data: poll, isLoading } = usePoll(params.id);
-  const completeMutation = useCompletePoll();
+  const { data: survey, isLoading } = useSurvey(params.id);
+  const completeMutation = useCompleteSurvey();
   const bookmarkMutation = useToggleBookmark();
-  const reportMutation = useReportPoll();
+  const reportMutation = useReportSurvey();
 
   const [completionCode, setCompletionCode] = React.useState("");
   const [reportReason, setReportReason] = React.useState<(typeof reportReasons)[number]>("SPAM");
@@ -68,7 +68,7 @@ export default function PollDetailsPage() {
       { id: params.id, completionCode: completionCode || undefined },
       {
         onSuccess: (data) => {
-          toast.success(t("polls.details.completedToast", { points: data.pointsAwarded }));
+          toast.success(t("surveys.details.completedToast", { points: data.pointsAwarded }));
           setConfirmOpen(false);
         },
         onError: (error) => toast.error(getApiErrorMessage(error)),
@@ -81,7 +81,7 @@ export default function PollDetailsPage() {
       { id: params.id, reason: reportReason, description: reportDescription || undefined },
       {
         onSuccess: () => {
-          toast.success(t("polls.details.reportSubmittedToast"));
+          toast.success(t("surveys.details.reportSubmittedToast"));
           setReportOpen(false);
         },
         onError: (error) => toast.error(getApiErrorMessage(error)),
@@ -92,7 +92,7 @@ export default function PollDetailsPage() {
   return (
     <AppShell>
       {(user) => {
-        if (isLoading || !poll) {
+        if (isLoading || !survey) {
           return (
             <div className="space-y-4">
               <Skeleton className="h-8 w-2/3" />
@@ -101,12 +101,12 @@ export default function PollDetailsPage() {
           );
         }
 
-        const progress = Math.min(100, (poll.currentResponses / poll.targetResponses) * 100);
-        const isOwner = poll.creatorId === user.id;
-        const isExpired = isPast(poll.deadline);
+        const progress = Math.min(100, (survey.currentResponses / survey.targetResponses) * 100);
+        const isOwner = survey.creatorId === user.id;
+        const isExpired = isPast(survey.deadline);
         const canParticipate =
-          !isOwner && !poll.viewerState?.completed && poll.status === "LIVE" && !isExpired;
-        const initials = `${poll.creator.firstName[0]}${poll.creator.lastName[0]}`.toUpperCase();
+          !isOwner && !survey.viewerState?.completed && survey.status === "LIVE" && !isExpired;
+        const initials = `${survey.creator.firstName[0]}${survey.creator.lastName[0]}`.toUpperCase();
 
         return (
           <div className="grid gap-6 lg:grid-cols-3">
@@ -114,16 +114,16 @@ export default function PollDetailsPage() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <Badge variant="secondary" className="mb-2">
-                    {localizedCategoryName(poll.category, i18n.language)}
+                    {localizedCategoryName(survey.category, i18n.language)}
                   </Badge>
-                  <h1 className="text-2xl font-semibold">{poll.title}</h1>
+                  <h1 className="text-2xl font-semibold">{survey.title}</h1>
                 </div>
                 <button
-                  onClick={() => bookmarkMutation.mutate(poll.id)}
+                  onClick={() => bookmarkMutation.mutate(survey.id)}
                   className="text-muted-foreground hover:text-primary"
-                  aria-label={t("polls.card.bookmark")}
+                  aria-label={t("surveys.card.bookmark")}
                 >
-                  {poll.viewerState?.bookmarked ? (
+                  {survey.viewerState?.bookmarked ? (
                     <BookmarkCheck className="size-6 text-primary" />
                   ) : (
                     <Bookmark className="size-6" />
@@ -134,11 +134,11 @@ export default function PollDetailsPage() {
               <Card>
                 <CardContent className="space-y-4 p-5">
                   <p className="whitespace-pre-line text-sm text-muted-foreground">
-                    {poll.description}
+                    {survey.description}
                   </p>
 
                   <div className="flex flex-wrap gap-2">
-                    {poll.tags.map(({ tag }) => (
+                    {survey.tags.map(({ tag }) => (
                       <Badge key={tag.id} variant="outline">
                         #{tag.name}
                       </Badge>
@@ -148,31 +148,31 @@ export default function PollDetailsPage() {
                   <div className="grid grid-cols-2 gap-4 border-t border-border pt-4 sm:grid-cols-4">
                     <div>
                       <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="size-3.5" /> {t("polls.details.time")}
+                        <Clock className="size-3.5" /> {t("surveys.details.time")}
                       </p>
                       <p className="font-medium">
-                        {poll.estimatedTimeMinutes} {t("polls.card.minutes")}
+                        {survey.estimatedTimeMinutes} {t("surveys.card.minutes")}
                       </p>
                     </div>
                     <div>
                       <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Sparkles className="size-3.5" /> {t("polls.details.reward")}
+                        <Sparkles className="size-3.5" /> {t("surveys.details.reward")}
                       </p>
                       <p className="font-medium">
-                        {poll.reward} {t("polls.card.pts")}
+                        {survey.reward} {t("surveys.card.pts")}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("polls.details.deadline")}</p>
+                      <p className="text-xs text-muted-foreground">{t("surveys.details.deadline")}</p>
                       <p className="font-medium">
-                        {new Date(poll.deadline).toLocaleDateString(
+                        {new Date(survey.deadline).toLocaleDateString(
                           i18n.language === "ar" ? "ar-SA" : "en-US"
                         )}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("polls.details.views")}</p>
-                      <p className="font-medium">{poll.views}</p>
+                      <p className="text-xs text-muted-foreground">{t("surveys.details.views")}</p>
+                      <p className="font-medium">{survey.views}</p>
                     </div>
                   </div>
 
@@ -180,9 +180,9 @@ export default function PollDetailsPage() {
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Users className="size-4" />
-                        {t("polls.details.responsesCount", {
-                          current: poll.currentResponses,
-                          target: poll.targetResponses,
+                        {t("surveys.details.responsesCount", {
+                          current: survey.currentResponses,
+                          target: survey.targetResponses,
                         })}
                       </span>
                       <span>{Math.round(progress)}%</span>
@@ -197,11 +197,11 @@ export default function PollDetailsPage() {
                   <AvatarFallback className="text-xs">{initials}</AvatarFallback>
                 </Avatar>
                 <span>
-                  {poll.creator.firstName} {poll.creator.lastName}
+                  {survey.creator.firstName} {survey.creator.lastName}
                 </span>
-                {poll.institution && (
+                {survey.institution && (
                   <span className="flex items-center gap-1">
-                    · <Building2 className="size-3.5" /> {poll.institution.name}
+                    · <Building2 className="size-3.5" /> {survey.institution.name}
                   </span>
                 )}
               </div>
@@ -212,16 +212,16 @@ export default function PollDetailsPage() {
                 <CardContent className="space-y-3 p-5">
                   {isOwner ? (
                     <Button asChild className="w-full">
-                      <Link href="/my-polls">{t("polls.details.managePoll")}</Link>
+                      <Link href="/my-surveys">{t("surveys.details.manageSurvey")}</Link>
                     </Button>
-                  ) : poll.viewerState?.completed ? (
+                  ) : survey.viewerState?.completed ? (
                     <Button disabled className="w-full gap-2">
-                      <CheckCircle2 className="size-4" /> {t("polls.details.alreadyCompleted")}
+                      <CheckCircle2 className="size-4" /> {t("surveys.details.alreadyCompleted")}
                     </Button>
                   ) : (
                     <Button asChild className="w-full gap-2">
-                      <a href={poll.pollUrl} target="_blank" rel="noreferrer">
-                        {t("polls.details.openPoll")} <ExternalLink className="size-4" />
+                      <a href={survey.surveyUrl} target="_blank" rel="noreferrer">
+                        {t("surveys.details.openSurvey")} <ExternalLink className="size-4" />
                       </a>
                     </Button>
                   )}
@@ -230,27 +230,27 @@ export default function PollDetailsPage() {
                     <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                       <DialogTrigger asChild>
                         <Button variant="secondary" className="w-full">
-                          {t("polls.details.iCompletedIt")}
+                          {t("surveys.details.iCompletedIt")}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>{t("polls.details.confirmCompletion")}</DialogTitle>
+                          <DialogTitle>{t("surveys.details.confirmCompletion")}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-3">
                           <p className="text-sm text-muted-foreground">
-                            {t("polls.details.confirmCompletionBody", { points: poll.reward })}
+                            {t("surveys.details.confirmCompletionBody", { points: survey.reward })}
                           </p>
-                          {poll.completionCode !== null && (
+                          {survey.completionCode !== null && (
                             <div className="space-y-1.5">
                               <Label htmlFor="completionCode">
-                                {t("polls.details.completionCode")}
+                                {t("surveys.details.completionCode")}
                               </Label>
                               <Input
                                 id="completionCode"
                                 value={completionCode}
                                 onChange={(e) => setCompletionCode(e.target.value)}
-                                placeholder={t("polls.details.completionCodePlaceholder")}
+                                placeholder={t("surveys.details.completionCodePlaceholder")}
                               />
                             </div>
                           )}
@@ -261,7 +261,7 @@ export default function PollDetailsPage() {
                             disabled={completeMutation.isPending}
                             className="w-full"
                           >
-                            {t("polls.details.confirmEarnPoints")}
+                            {t("surveys.details.confirmEarnPoints")}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -272,12 +272,12 @@ export default function PollDetailsPage() {
                     <Dialog open={reportOpen} onOpenChange={setReportOpen}>
                       <DialogTrigger asChild>
                         <Button variant="ghost" size="sm" className="w-full gap-1.5 text-muted-foreground">
-                          <Flag className="size-3.5" /> {t("polls.details.reportPoll")}
+                          <Flag className="size-3.5" /> {t("surveys.details.reportSurvey")}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>{t("polls.details.reportThisPoll")}</DialogTitle>
+                          <DialogTitle>{t("surveys.details.reportThisSurvey")}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-3">
                           <Select
@@ -290,20 +290,20 @@ export default function PollDetailsPage() {
                             <SelectContent>
                               {reportReasons.map((reason) => (
                                 <SelectItem key={reason} value={reason}>
-                                  {t(`polls.details.reportReasons.${reason}`)}
+                                  {t(`surveys.details.reportReasons.${reason}`)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                           <Input
-                            placeholder={t("polls.details.additionalDetails")}
+                            placeholder={t("surveys.details.additionalDetails")}
                             value={reportDescription}
                             onChange={(e) => setReportDescription(e.target.value)}
                           />
                         </div>
                         <DialogFooter>
                           <Button onClick={handleReport} disabled={reportMutation.isPending} className="w-full">
-                            {t("polls.details.submitReport")}
+                            {t("surveys.details.submitReport")}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -313,7 +313,7 @@ export default function PollDetailsPage() {
               </Card>
 
               <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-1.5">
-                <ArrowLeft className="icon-flip size-4" /> {t("polls.details.back")}
+                <ArrowLeft className="icon-flip size-4" /> {t("surveys.details.back")}
               </Button>
             </div>
           </div>

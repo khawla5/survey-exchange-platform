@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { AcademicLevel, Gender, Language, PollReportReason } from "@prisma/client";
+import { AcademicLevel, Gender, Language, SurveyReportReason } from "@prisma/client";
 
-export const createPollSchema = z.object({
+export const createSurveySchema = z.object({
   title: z.string().trim().min(3, "Title must be at least 3 characters").max(200),
   description: z.string().trim().min(10, "Description must be at least 10 characters").max(5000),
   categoryId: z.string().uuid("Choose a category"),
   thumbnail: z.string().trim().url().optional().or(z.literal("")),
-  pollUrl: z.string().trim().url("Enter a valid poll link"),
+  surveyUrl: z.string().trim().url("Enter a valid survey link"),
   completionCode: z.string().trim().max(50).optional().or(z.literal("")),
   estimatedTimeMinutes: z.coerce.number().int().min(1).max(180),
   tags: z.array(z.string().trim().min(1).max(30)).max(10).optional().default([]),
@@ -25,9 +25,9 @@ export const createPollSchema = z.object({
   publish: z.boolean().default(false),
 });
 
-export const updatePollSchema = createPollSchema.partial().omit({ publish: true });
+export const updateSurveySchema = createSurveySchema.partial().omit({ publish: true });
 
-export const listPollsQuerySchema = z.object({
+export const listSurveysQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(12),
   search: z.string().trim().optional(),
@@ -41,17 +41,17 @@ export const listPollsQuerySchema = z.object({
   sort: z.enum(["newest", "reward", "deadline", "popular", "time"]).default("newest"),
 });
 
-export const completePollSchema = z.object({
+export const completeSurveySchema = z.object({
   completionCode: z.string().trim().max(50).optional(),
 });
 
-export const reportPollSchema = z.object({
-  reason: z.nativeEnum(PollReportReason),
+export const reportSurveySchema = z.object({
+  reason: z.nativeEnum(SurveyReportReason),
   description: z.string().trim().max(1000).optional(),
 });
 
-export type CreatePollInput = z.infer<typeof createPollSchema>;
-export type UpdatePollInput = z.infer<typeof updatePollSchema>;
-export type ListPollsQuery = z.infer<typeof listPollsQuerySchema>;
-export type CompletePollInput = z.infer<typeof completePollSchema>;
-export type ReportPollInput = z.infer<typeof reportPollSchema>;
+export type CreateSurveyInput = z.infer<typeof createSurveySchema>;
+export type UpdateSurveyInput = z.infer<typeof updateSurveySchema>;
+export type ListSurveysQuery = z.infer<typeof listSurveysQuerySchema>;
+export type CompleteSurveyInput = z.infer<typeof completeSurveySchema>;
+export type ReportSurveyInput = z.infer<typeof reportSurveySchema>;

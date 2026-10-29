@@ -60,7 +60,8 @@ const registerSchema = z
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language === "ar" ? "ar" : "en";
   const router = useRouter();
   const registerMutation = useRegister();
 
@@ -182,23 +183,47 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-2 pt-2">
-          <label className="flex items-start gap-2 text-sm">
+          <div className="flex items-start gap-2 text-sm">
             <Checkbox
+              id="acceptTerms"
               checked={watch("acceptTerms")}
               onCheckedChange={(v) => setValue("acceptTerms", v === true)}
             />
-            <span>{t("auth.register.acceptTerms")}</span>
-          </label>
+            <label htmlFor="acceptTerms" className="cursor-pointer">
+              {t("auth.register.acceptTerms")}{" "}
+              <Link
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline underline-offset-2 hover:no-underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {lang === "ar" ? "(عرض)" : "(view)"}
+              </Link>
+            </label>
+          </div>
           {errors.acceptTerms && (
             <p className="text-xs text-destructive">{t(errors.acceptTerms.message as string)}</p>
           )}
-          <label className="flex items-start gap-2 text-sm">
+          <div className="flex items-start gap-2 text-sm">
             <Checkbox
+              id="acceptPrivacy"
               checked={watch("acceptPrivacy")}
               onCheckedChange={(v) => setValue("acceptPrivacy", v === true)}
             />
-            <span>{t("auth.register.acceptPrivacy")}</span>
-          </label>
+            <label htmlFor="acceptPrivacy" className="cursor-pointer">
+              {t("auth.register.acceptPrivacy")}{" "}
+              <Link
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline underline-offset-2 hover:no-underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {lang === "ar" ? "(عرض)" : "(view)"}
+              </Link>
+            </label>
+          </div>
           {errors.acceptPrivacy && (
             <p className="text-xs text-destructive">{t(errors.acceptPrivacy.message as string)}</p>
           )}

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/layout/app-shell";
-import { PollCard } from "@/components/polls/poll-card";
+import { SurveyCard } from "@/components/surveys/survey-card";
 import { useDashboardStatistics, useRecommendations } from "@/lib/dashboard/use-dashboard";
 
 function StatCard({
@@ -64,8 +64,8 @@ export default function DashboardPage() {
               <StatCard icon={TrendingUp} label={t("dashboard.reputation")} value={stats.reputation} />
               <StatCard
                 icon={FileCheck2}
-                label={t("dashboard.completedPolls")}
-                value={stats.completedPolls}
+                label={t("dashboard.completedSurveys")}
+                value={stats.completedSurveys}
               />
               <StatCard icon={BookMarked} label={t("dashboard.bookmarks")} value={stats.bookmarks} />
             </div>
@@ -79,7 +79,7 @@ export default function DashboardPage() {
                   {t("dashboard.recommended")}
                 </span>
                 <Button asChild variant="ghost" size="sm">
-                  <Link href="/polls">{t("common.browseAll")}</Link>
+                  <Link href="/surveys">{t("common.browseAll")}</Link>
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -92,8 +92,8 @@ export default function DashboardPage() {
                 </div>
               ) : recommendations && recommendations.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {recommendations.map((poll) => (
-                    <PollCard key={poll.id} poll={poll} />
+                  {recommendations.map((survey) => (
+                    <SurveyCard key={survey.id} survey={survey} />
                   ))}
                 </div>
               ) : (
@@ -101,7 +101,7 @@ export default function DashboardPage() {
                   {t("dashboard.noRecommendations")}
                   <div className="mt-3">
                     <Button asChild size="sm">
-                      <Link href="/polls/create">{t("dashboard.createPollCta")}</Link>
+                      <Link href="/surveys/create">{t("dashboard.createSurveyCta")}</Link>
                     </Button>
                   </div>
                 </div>

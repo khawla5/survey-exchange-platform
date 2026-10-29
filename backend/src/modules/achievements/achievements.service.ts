@@ -4,7 +4,7 @@ import { notificationsService } from "@/modules/notifications/notifications.serv
 import { pointsService } from "@/modules/points/points.service";
 
 interface AchievementCriteria {
-  type: "polls_completed" | "polls_published";
+  type: "surveys_completed" | "surveys_published";
   threshold: number;
 }
 
@@ -36,15 +36,15 @@ export const achievementsService = {
     }));
   },
 
-  async checkAndUnlock(userId: string, event: "polls_completed" | "polls_published") {
+  async checkAndUnlock(userId: string, event: "surveys_completed" | "surveys_published") {
     const all = await achievementsRepository.listAll();
     const relevant = all.filter((a) => parseCriteria(a.criteria)?.type === event);
     if (relevant.length === 0) return [];
 
     const currentCount =
-      event === "polls_completed"
-        ? await achievementsRepository.countCompletedPolls(userId)
-        : await achievementsRepository.countPublishedPolls(userId);
+      event === "surveys_completed"
+        ? await achievementsRepository.countCompletedSurveys(userId)
+        : await achievementsRepository.countPublishedSurveys(userId);
 
     const unlockedNow = [];
     for (const achievement of relevant) {
