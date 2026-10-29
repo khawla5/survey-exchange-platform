@@ -49,7 +49,6 @@ const registerSchema = z
     confirmPassword: z.string(),
     academicRole: z.string().optional(),
     institutionName: z.string().trim().optional(),
-    country: z.string().trim().optional(),
     acceptTerms: z.boolean().refine((v) => v === true, "auth.validation.acceptRequired"),
     acceptPrivacy: z.boolean().refine((v) => v === true, "auth.validation.acceptRequired"),
   })
@@ -80,7 +79,6 @@ export default function RegisterPage() {
       password: "",
       confirmPassword: "",
       institutionName: "",
-      country: "",
       acceptTerms: false,
       acceptPrivacy: false,
     },
@@ -162,26 +160,20 @@ export default function RegisterPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label>{t("auth.register.academicRole")}</Label>
-            <Select onValueChange={(v) => setValue("academicRole", v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="—" />
-              </SelectTrigger>
-              <SelectContent>
-                {academicLevels.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {t(`academicRoles.${level}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="country">{t("auth.register.country")}</Label>
-            <Input id="country" autoComplete="country-name" {...register("country")} />
-          </div>
+        <div className="space-y-1.5">
+          <Label>{t("auth.register.academicRole")}</Label>
+          <Select onValueChange={(v) => setValue("academicRole", v)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent>
+              {academicLevels.map((level) => (
+                <SelectItem key={level} value={level}>
+                  {t(`academicRoles.${level}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-1.5">
