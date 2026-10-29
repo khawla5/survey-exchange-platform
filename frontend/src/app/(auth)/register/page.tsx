@@ -60,8 +60,7 @@ const registerSchema = z
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language === "ar" ? "ar" : "en";
+  const { t } = useTranslation();
   const router = useRouter();
   const registerMutation = useRegister();
 
@@ -190,15 +189,15 @@ export default function RegisterPage() {
               onCheckedChange={(v) => setValue("acceptTerms", v === true)}
             />
             <label htmlFor="acceptTerms" className="cursor-pointer">
-              {t("auth.register.acceptTerms")}{" "}
+              {t("auth.register.acceptPrefix")}{" "}
               <Link
                 href="/terms"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary underline underline-offset-2 hover:no-underline"
+                className="font-medium text-primary hover:underline"
                 onClick={(e) => e.stopPropagation()}
               >
-                {lang === "ar" ? "(عرض)" : "(view)"}
+                {t("auth.register.termsOfService")}
               </Link>
             </label>
           </div>
@@ -212,15 +211,15 @@ export default function RegisterPage() {
               onCheckedChange={(v) => setValue("acceptPrivacy", v === true)}
             />
             <label htmlFor="acceptPrivacy" className="cursor-pointer">
-              {t("auth.register.acceptPrivacy")}{" "}
+              {t("auth.register.acceptPrefix")}{" "}
               <Link
                 href="/privacy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary underline underline-offset-2 hover:no-underline"
+                className="font-medium text-primary hover:underline"
                 onClick={(e) => e.stopPropagation()}
               >
-                {lang === "ar" ? "(عرض)" : "(view)"}
+                {t("auth.register.privacyPolicy")}
               </Link>
             </label>
           </div>
